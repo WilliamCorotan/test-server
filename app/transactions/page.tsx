@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-// import TransactionList from "@/components/TransactionList";
+import TransactionList from "@/components/TransactionList";
 
 export default function TransactionsPage() {
     const { userId } = useAuth();
@@ -11,9 +11,12 @@ export default function TransactionsPage() {
     }
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Transactions</h1>
-            {/* <TransactionList /> */}
+        <div className="container mx-auto p-6 space-y-6">
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Transactions</h1>
+                {/* Add New Transaction button can be added here */}
+            </div>
+            <TransactionList />
         </div>
     );
 }

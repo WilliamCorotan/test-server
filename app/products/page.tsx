@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-// import ProductList from "@/components/ProductList";
+import ProductList from "@/components/ProductList";
 
 export default function ProductsPage() {
     const { userId } = useAuth();
@@ -11,9 +11,12 @@ export default function ProductsPage() {
     }
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold">Products</h1>
-            {/* <ProductList /> */}
+        <div className="container mx-auto p-6 space-y-6">
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Products</h1>
+                {/* Add New Product button can be added here */}
+            </div>
+            <ProductList />
         </div>
     );
 }

@@ -39,7 +39,7 @@ export default function TransactionList() {
                                 ).toLocaleDateString()}
                             </TableCell>
                             <TableCell>
-                                ${transaction.totalPrice.toFixed(2)}
+                                PHP{transaction.totalPrice.toFixed(2)}
                             </TableCell>
                             <TableCell>{transaction.paymentMethodId}</TableCell>
                             <TableCell>{transaction.status}</TableCell>

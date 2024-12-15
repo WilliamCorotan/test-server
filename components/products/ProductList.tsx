@@ -116,10 +116,10 @@ export default function ProductList() {
                                 <TableCell>{product.name}</TableCell>
                                 <TableCell>{product.stock}</TableCell>
                                 <TableCell>
-                                    ${product.buyPrice.toFixed(2)}
+                                    PHP{product.buyPrice.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
-                                    ${product.sellPrice.toFixed(2)}
+                                    PHP{product.sellPrice.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
                                     {product.stock <=

@@ -2,6 +2,7 @@ import { initialSetup } from "./00-initial-setup";
 import { contactsAndSettings } from "./01-contacts-and-settings";
 import { productsSetup } from "./02-products-setup";
 import { transactionsSetup } from "./03-transactions-setup";
+import { addClerkId } from "./04-add-clerk-id";
 
 export async function runMigrations() {
     try {
@@ -18,6 +19,9 @@ export async function runMigrations() {
 
         await transactionsSetup();
         console.log("✓ Transactions tables created");
+
+        await addClerkId();
+        console.log("✓ Added Clerk ID support");
 
         console.log("All migrations completed successfully");
     } catch (error) {

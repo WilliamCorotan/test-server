@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getTransactions, createTransaction } from "@/lib/api/transactions";
+import { getPaymentMethods, createPaymentMethod } from "@/lib/api/settings";
 
 export async function GET() {
     const { userId } = auth();
@@ -9,11 +9,11 @@ export async function GET() {
     }
 
     try {
-        const transactionsList = await getTransactions(userId);
-        return NextResponse.json(transactionsList);
+        const methods = await getPaymentMethods(userId);
+        return NextResponse.json(methods);
     } catch (error) {
         return NextResponse.json(
-            { error: "Failed to fetch transactions" },
+            { error: "Failed to fetch payment methods" },
             { status: 500 }
         );
     }
@@ -27,16 +27,11 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { items, ...transactionData } = body;
-        const newTransaction = await createTransaction(
-            transactionData,
-            items,
-            userId
-        );
-        return NextResponse.json(newTransaction);
+        const newMethod = await createPaymentMethod(body, userId);
+        return NextResponse.json(newMethod);
     } catch (error) {
         return NextResponse.json(
-            { error: "Failed to create transaction" },
+            { error: "Failed to create payment method" },
             { status: 500 }
         );
     }

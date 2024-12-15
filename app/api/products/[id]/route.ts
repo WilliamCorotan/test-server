@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { products } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { updateProduct, deleteProduct } from "@/lib/api/products";
 
 export async function PUT(
     request: Request,
@@ -15,11 +13,19 @@ export async function PUT(
 
     try {
         const body = await request.json();
-        const updatedProduct = await db
-            .update(products)
-            .set(body)
-            .where(eq(products.id, parseInt(params.id)))
-            .returning();
+        const updatedProduct = await updateProduct(
+            parseInt(params.id),
+            body,
+            userId
+        );
+
+        if (!updatedProduct.length) {
+            return NextResponse.json(
+                { error: "Product not found or unauthorized" },
+                { status: 404 }
+            );
+        }
+
         return NextResponse.json(updatedProduct[0]);
     } catch (error) {
         return NextResponse.json(
@@ -39,7 +45,15 @@ export async function DELETE(
     }
 
     try {
-        await db.delete(products).where(eq(products.id, parseInt(params.id)));
+        const result = await deleteProduct(parseInt(params.id), userId);
+
+        if (!result) {
+            return NextResponse.json(
+                { error: "Product not found or unauthorized" },
+                { status: 404 }
+            );
+        }
+
         return NextResponse.json({ success: true });
     } catch (error) {
         return NextResponse.json(

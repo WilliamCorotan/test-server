@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-import ProductList from "@/components/ProductList";
+import ProductList from "@/components/products/ProductList";
 
 export default function ProductsPage() {
     const { userId } = useAuth();

@@ -12,8 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface UnitMeasurementFormData {
-    name: string;
-    description: string;
+    id?: number;
+    name?: string;
+    description?: string;
+    clerkId?: string;
 }
 
 interface UnitMeasurementFormProps {

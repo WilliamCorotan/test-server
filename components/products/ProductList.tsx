@@ -11,14 +11,14 @@ import { Button } from "@/components/ui/button";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { Product, ProductFormData } from "./types";
+// import { Product, ProductFormData } from "./types";
 import { ProductSummary } from "./ProductSummary";
 
 export default function ProductList() {
     const { products, loading, error, createProduct, refreshProducts } =
         useProducts();
     const [openDialog, setOpenDialog] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [editingProduct, setEditingProduct] = useState<any | null>(null);
     const [mode, setMode] = useState<"create" | "edit">("create");
 
     const handleCreate = () => {
@@ -27,7 +27,7 @@ export default function ProductList() {
         setOpenDialog(true);
     };
 
-    const handleEdit = (product: Product) => {
+    const handleEdit = (product: any) => {
         setMode("edit");
         setEditingProduct(product);
         setOpenDialog(true);
@@ -47,7 +47,7 @@ export default function ProductList() {
         }
     };
 
-    const handleSubmit = async (data: ProductFormData) => {
+    const handleSubmit = async (data: any) => {
         try {
             const processedData = {
                 ...data,

@@ -10,17 +10,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Product, ProductFormData } from "./types";
+// import { Product, ProductFormData } from "./types";
 
 interface ProductFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit: (data: ProductFormData) => void;
-    initialData?: Product | null;
+    onSubmit: (data: any) => void;
+    initialData?: any | null;
     mode: "create" | "edit";
 }
 
-const defaultFormData: ProductFormData = {
+const defaultFormData: any = {
     name: "",
     code: "",
     description: "",
@@ -37,7 +37,7 @@ export function ProductForm({
     initialData,
     mode,
 }: ProductFormProps) {
-    const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
+    const [formData, setFormData] = useState<any>(defaultFormData);
 
     useEffect(() => {
         if (initialData) {

@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { updateProduct, deleteProduct } from "@/lib/api/products";
 
-export async function PUT(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, { params }: { params: any }) {
     const { userId } = auth();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -36,10 +33,7 @@ export async function PUT(
     }
 }
 
-export async function DELETE(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, { params }: any) {
     const { userId } = auth();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

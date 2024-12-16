@@ -10,24 +10,25 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Product } from "@/types";
 // import { Product, ProductFormData } from "./types";
 
 interface ProductFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit: (data: any) => void;
-    initialData?: any | null;
+    onSubmit: (data: Product) => void;
+    initialData?: Product | null;
     mode: "create" | "edit";
 }
 
-const defaultFormData: any = {
+const defaultFormData: Product = {
     name: "",
     code: "",
     description: "",
-    buyPrice: "",
-    sellPrice: "",
-    stock: "",
-    lowStockLevel: "",
+    buyPrice: 0,
+    sellPrice: 0,
+    stock: 0,
+    lowStockLevel: 0,
 };
 
 export function ProductForm({

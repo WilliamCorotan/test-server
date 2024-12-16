@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 // import { Product, ProductFormData } from "./types";
 import { ProductSummary } from "./ProductSummary";
+import { Product } from "@/types";
 
 export default function ProductList() {
     const { products, loading, error, createProduct, refreshProducts } =
@@ -27,7 +28,7 @@ export default function ProductList() {
         setOpenDialog(true);
     };
 
-    const handleEdit = (product: any) => {
+    const handleEdit = (product: Product) => {
         setMode("edit");
         setEditingProduct(product);
         setOpenDialog(true);
@@ -47,7 +48,7 @@ export default function ProductList() {
         }
     };
 
-    const handleSubmit = async (data: any) => {
+    const handleSubmit = async (data: Product) => {
         try {
             const processedData = {
                 ...data,
@@ -57,6 +58,10 @@ export default function ProductList() {
                 lowStockLevel: data.lowStockLevel
                     ? parseInt(data.lowStockLevel.toString())
                     : null,
+                description: data.description ?? "",
+                image: data.image ?? null,
+                expirationDate: data.expirationDate ?? null,
+                unitMeasurementsId: data.unitMeasurementsId ?? null, // Add this line
             };
 
             if (mode === "create") {

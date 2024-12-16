@@ -1,19 +1,20 @@
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
+import { Product } from "@/types";
 import { and, eq } from "drizzle-orm";
 
 export async function getProducts(userId: string) {
     return db.select().from(products).where(eq(products.clerkId, userId));
 }
 
-export async function createProduct(data: any, userId: string) {
+export async function createProduct(data: Product, userId: string) {
     return db.insert(products).values({
         ...data,
         clerkId: userId,
     });
 }
 
-export async function updateProduct(id: number, data: any, userId: string) {
+export async function updateProduct(id: number, data: Product, userId: string) {
     return db
         .update(products)
         .set(data)

@@ -4,7 +4,7 @@ interface Product {
     id: number;
     name: string;
     code: string;
-    description: string | null;
+    description: string | undefined;
     image: string | null;
     buyPrice: number;
     sellPrice: number;

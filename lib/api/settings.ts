@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { unitMeasurements, payments } from "@/lib/db/schema";
+import { UnitMeasurement, Payment } from "@/types";
 import { eq, and } from "drizzle-orm";
 
 // Unit Measurements
@@ -10,7 +11,10 @@ export async function getUnitMeasurements(userId: string) {
         .where(eq(unitMeasurements.clerkId, userId));
 }
 
-export async function createUnitMeasurement(data: any, userId: string) {
+export async function createUnitMeasurement(
+    data: UnitMeasurement,
+    userId: string
+) {
     return db.insert(unitMeasurements).values({
         ...data,
         clerkId: userId,
@@ -19,7 +23,7 @@ export async function createUnitMeasurement(data: any, userId: string) {
 
 export async function updateUnitMeasurement(
     id: number,
-    data: any,
+    data: UnitMeasurement,
     userId: string
 ) {
     return db
@@ -50,7 +54,7 @@ export async function getPaymentMethods(userId: string) {
     return db.select().from(payments).where(eq(payments.clerkId, userId));
 }
 
-export async function createPaymentMethod(data: any, userId: string) {
+export async function createPaymentMethod(data: Payment, userId: string) {
     return db.insert(payments).values({
         ...data,
         clerkId: userId,
@@ -59,7 +63,7 @@ export async function createPaymentMethod(data: any, userId: string) {
 
 export async function updatePaymentMethod(
     id: number,
-    data: any,
+    data: Payment,
     userId: string
 ) {
     return db

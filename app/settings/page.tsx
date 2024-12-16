@@ -13,6 +13,8 @@ import {
 import { UnitMeasurementForm } from "@/components/settings/UnitMeasurementForm";
 import { PaymentMethodForm } from "@/components/settings/PaymentMethodForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UnitMeasurementList } from "@/components/settings/UnitMeasurementList";
+import { PaymentMethodList } from "@/components/settings/PaymentMethodList";
 
 export default function SettingsPage() {
     const { userId } = useAuth();
@@ -62,7 +64,7 @@ export default function SettingsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {/* Unit measurements will be mapped here */}
+                                <UnitMeasurementList />
                             </TableBody>
                         </Table>
                     </div>
@@ -89,7 +91,7 @@ export default function SettingsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {/* Payment methods will be mapped here */}
+                                <PaymentMethodList />
                             </TableBody>
                         </Table>
                     </div>
@@ -114,7 +116,6 @@ export default function SettingsPage() {
                                 "Failed to create unit measurement"
                             );
                         setOpenUnitMeasurementDialog(false);
-                        // Refresh the list
                     } catch (error) {
                         console.error(
                             "Error creating unit measurement:",
@@ -141,7 +142,6 @@ export default function SettingsPage() {
                         if (!response.ok)
                             throw new Error("Failed to create payment method");
                         setOpenPaymentMethodDialog(false);
-                        // Refresh the list
                     } catch (error) {
                         console.error("Error creating payment method:", error);
                     }

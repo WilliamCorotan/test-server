@@ -9,12 +9,6 @@ export async function productsSetup() {
       description TEXT
     );
 
-    CREATE TABLE IF NOT EXISTS product_categories (
-      id INTEGER PRIMARY KEY,
-      name TEXT,
-      description TEXT
-    );
-
   `);
 
     await db.run(sql`

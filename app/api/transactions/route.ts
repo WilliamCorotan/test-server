@@ -12,6 +12,7 @@ export async function GET() {
         const transactionsList = await getTransactions(userId);
         return NextResponse.json(transactionsList);
     } catch (error) {
+        console.log(error);
         return NextResponse.json(
             { error: "Failed to fetch transactions" },
             { status: 500 }
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
         );
         return NextResponse.json(newTransaction);
     } catch (error) {
+        console.log(error);
         return NextResponse.json(
             { error: "Failed to create transaction" },
             { status: 500 }

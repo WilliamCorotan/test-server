@@ -12,6 +12,7 @@ export async function GET() {
         const measurements = await getUnitMeasurements(userId);
         return NextResponse.json(measurements);
     } catch (error) {
+        console.log(error);
         return NextResponse.json(
             { error: "Failed to fetch unit measurements" },
             { status: 500 }
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
         const newMeasurement = await createUnitMeasurement(body, userId);
         return NextResponse.json(newMeasurement);
     } catch (error) {
+        console.log(error);
         return NextResponse.json(
             { error: "Failed to create unit measurement" },
             { status: 500 }

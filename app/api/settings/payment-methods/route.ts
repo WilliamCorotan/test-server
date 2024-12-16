@@ -12,6 +12,7 @@ export async function GET() {
         const methods = await getPaymentMethods(userId);
         return NextResponse.json(methods);
     } catch (error) {
+        console.log(error);
         return NextResponse.json(
             { error: "Failed to fetch payment methods" },
             { status: 500 }
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
         const newMethod = await createPaymentMethod(body, userId);
         return NextResponse.json(newMethod);
     } catch (error) {
+        console.log(error);
         return NextResponse.json(
             { error: "Failed to create payment method" },
             { status: 500 }

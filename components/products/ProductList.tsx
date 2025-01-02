@@ -11,15 +11,14 @@ import { Button } from "@/components/ui/button";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-// import { Product, ProductFormData } from "./types";
+import { Product, ProductFormData } from "@/types";
 import { ProductSummary } from "./ProductSummary";
-import { Product } from "@/types";
 
 export default function ProductList() {
     const { products, loading, error, createProduct, refreshProducts } =
         useProducts();
     const [openDialog, setOpenDialog] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<any | null>(null);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [mode, setMode] = useState<"create" | "edit">("create");
 
     const handleCreate = () => {
@@ -48,20 +47,21 @@ export default function ProductList() {
         }
     };
 
-    const handleSubmit = async (data: Product) => {
+    const handleSubmit = async (data: ProductFormData) => {
         try {
             const processedData = {
                 ...data,
+                description: data.description || undefined,
+                image: data.image || undefined,
+                expirationDate: data.expirationDate || undefined,
+                unitMeasurementsId: data.unitMeasurementsId ?? 0,
+                clerkId: data.clerkId || '',
                 buyPrice: parseFloat(data.buyPrice.toString()),
                 sellPrice: parseFloat(data.sellPrice.toString()),
                 stock: parseInt(data.stock.toString()),
                 lowStockLevel: data.lowStockLevel
                     ? parseInt(data.lowStockLevel.toString())
-                    : null,
-                description: data.description ?? "",
-                image: data.image ?? null,
-                expirationDate: data.expirationDate ?? null,
-                unitMeasurementsId: data.unitMeasurementsId ?? null, // Add this line
+                    : undefined,
             };
 
             if (mode === "create") {

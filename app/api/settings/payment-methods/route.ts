@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUserId } from "@/lib/api/base";
 import { getPaymentMethods, createPaymentMethod } from "@/lib/api/settings";
 
+
 export async function GET() {
-    const { userId } = auth();
+    const userId = await getCurrentUserId();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -12,7 +13,7 @@ export async function GET() {
         const methods = await getPaymentMethods(userId);
         return NextResponse.json(methods);
     } catch (error) {
-        console.log(error);
+        console.error("Error fetching payment methods:", error);
         return NextResponse.json(
             { error: "Failed to fetch payment methods" },
             { status: 500 }
@@ -21,7 +22,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    const { userId } = auth();
+    const userId = await getCurrentUserId();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
         const newMethod = await createPaymentMethod(body, userId);
         return NextResponse.json(newMethod);
     } catch (error) {
-        console.log(error);
+        console.error("Error creating payment method:", error);
         return NextResponse.json(
             { error: "Failed to create payment method" },
             { status: 500 }

@@ -4,12 +4,14 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { PaymentMethodForm } from "./PaymentMethodForm";
-import { Payment } from "@/types";
+import { PaymentMethod } from "@/types";
 
 export function PaymentMethodList() {
     const { paymentMethods, loading, error, deletePaymentMethod } =
         usePaymentMethods();
-    const [editingMethod, setEditingMethod] = useState<Payment | null>(null);
+    const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(
+        null
+    );
     const [openEditDialog, setOpenEditDialog] = useState(false);
 
     const handleDelete = async (id: number) => {
@@ -22,7 +24,7 @@ export function PaymentMethodList() {
         }
     };
 
-    const handleEdit = (method: Payment) => {
+    const handleEdit = (method: PaymentMethod) => {
         setEditingMethod(method);
         setOpenEditDialog(true);
     };

@@ -1,13 +1,13 @@
 import { db } from "@/lib/db";
 import { payments } from "@/lib/db/schema";
-import { Payment } from "@/types";
+import { PaymentMethod } from "@/types";
 import { eq, and } from "drizzle-orm";
 
 export async function getPaymentMethods(userId: string) {
     return db.select().from(payments).where(eq(payments.clerkId, userId));
 }
 
-export async function createPaymentMethod(data: Payment, userId: string) {
+export async function createPaymentMethod(data: PaymentMethod, userId: string) {
     return db.insert(payments).values({
         ...data,
         clerkId: userId,
@@ -16,7 +16,7 @@ export async function createPaymentMethod(data: Payment, userId: string) {
 
 export async function updatePaymentMethod(
     id: number,
-    data: Payment,
+    data: PaymentMethod,
     userId: string
 ) {
     return db

@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
+import { Product } from "@/types";
 
-interface Product {
-    id: number;
-    name: string;
-    code: string;
-    description: string | undefined;
-    image: string | null;
-    buyPrice: number;
-    sellPrice: number;
-    stock: number;
-    lowStockLevel: number | null;
-    expirationDate: string | null;
-    unitMeasurementsId: number | null;
-}
+// interface Product {
+//     id: number;
+//     name: string;
+//     code: string;
+//     description: string | null;
+//     image: string | null;
+//     buyPrice: number;
+//     sellPrice: number;
+//     stock: number;
+//     lowStockLevel: number | null;
+//     expirationDate: string | null;
+//     unitMeasurementsId: number | null;
+//     clerkId: string;
+// }
 
 export function useProducts() {
     const [products, setProducts] = useState<Product[]>([]);

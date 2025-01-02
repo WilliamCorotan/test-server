@@ -12,9 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface PaymentMethodFormData {
-    id?: number;
-    name?: string;
-    clerkId?: string;
+    name: string;
 }
 
 interface PaymentMethodFormProps {

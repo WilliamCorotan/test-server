@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { getProducts, createProduct } from "@/lib/api/products";
+import { getCurrentUserId } from "@/lib/api/base";
 
 export async function GET() {
-    const { userId } = auth();
+    const userId = await getCurrentUserId();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -21,7 +21,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    const { userId } = auth();
+    const userId = await getCurrentUserId();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -31,9 +31,9 @@ export async function POST(request: Request) {
         const newProduct = await createProduct(body, userId);
         return NextResponse.json(newProduct);
     } catch (error) {
-        console.log(error);
+        console.error("Error create products:", error);
         return NextResponse.json(
-            { error: "Failed to create product" },
+            { error: "Failed to create product"},
             { status: 500 }
         );
     }

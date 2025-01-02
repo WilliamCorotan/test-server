@@ -10,18 +10,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Product } from "@/types";
-// import { Product, ProductFormData } from "./types";
+import { Product, ProductFormData } from "@/types";
 
 interface ProductFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit: (data: Product) => void;
+    onSubmit: (data: ProductFormData) => void;
     initialData?: Product | null;
     mode: "create" | "edit";
 }
 
-const defaultFormData: Product = {
+const defaultFormData: ProductFormData = {
     name: "",
     code: "",
     description: "",
@@ -38,7 +37,7 @@ export function ProductForm({
     initialData,
     mode,
 }: ProductFormProps) {
-    const [formData, setFormData] = useState<any>(defaultFormData);
+    const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
 
     useEffect(() => {
         if (initialData) {
@@ -49,7 +48,7 @@ export function ProductForm({
                 buyPrice: initialData.buyPrice,
                 sellPrice: initialData.sellPrice,
                 stock: initialData.stock,
-                lowStockLevel: initialData.lowStockLevel || "",
+                lowStockLevel: initialData.lowStockLevel || 0,
             });
         } else {
             setFormData(defaultFormData);
@@ -136,7 +135,7 @@ export function ProductForm({
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        buyPrice: e.target.value,
+                                        buyPrice: parseFloat(e.target.value),
                                     })
                                 }
                                 className="col-span-3"
@@ -155,7 +154,7 @@ export function ProductForm({
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        sellPrice: e.target.value,
+                                        sellPrice: parseFloat(e.target.value),
                                     })
                                 }
                                 className="col-span-3"
@@ -173,7 +172,7 @@ export function ProductForm({
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        stock: e.target.value,
+                                        stock: parseInt(e.target.value),
                                     })
                                 }
                                 className="col-span-3"
@@ -194,7 +193,7 @@ export function ProductForm({
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        lowStockLevel: e.target.value,
+                                        lowStockLevel: parseInt(e.target.value),
                                     })
                                 }
                                 className="col-span-3"

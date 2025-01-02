@@ -1,63 +1,58 @@
 import { useCallback, useEffect, useState } from "react";
-import { UnitMeasurement } from "@/types";
+import { PaymentMethod } from "@/types";
 
-export function useUnitMeasurements() {
-    const [unitMeasurements, setUnitMeasurements] = useState<UnitMeasurement[]>(
-        []
-    );
+export function usePaymentMethods() {
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchUnitMeasurements = useCallback(async () => {
+    const fetchPaymentMethods = useCallback(async () => {
         try {
-            const response = await fetch("/api/settings/unit-measurements");
+            const response = await fetch("/api/settings/payment-methods");
             if (!response.ok)
-                throw new Error("Failed to fetch unit measurements");
+                throw new Error("Failed to fetch payment methods");
             const data = await response.json();
-            setUnitMeasurements(data);
+            setPaymentMethods(data);
             setError(null);
         } catch (err) {
             setError(
                 err instanceof Error
                     ? err.message
-                    : "Failed to fetch unit measurements"
+                    : "Failed to fetch payment methods"
             );
         } finally {
             setLoading(false);
         }
     }, []);
 
-    const createUnitMeasurement = useCallback(
-        async (data: Omit<UnitMeasurement, "id" | "clerkId">) => {
+    const createPaymentMethod = useCallback(
+        async (data: Omit<PaymentMethod, "id" | "clerkId">) => {
             try {
-                const response = await fetch(
-                    "/api/settings/unit-measurements",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data),
-                    }
-                );
+                const response = await fetch("/api/settings/payment-methods", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
                 if (!response.ok)
-                    throw new Error("Failed to create unit measurement");
-                await fetchUnitMeasurements();
+                    throw new Error("Failed to create payment method");
+                await fetchPaymentMethods();
             } catch (err) {
                 setError(
                     err instanceof Error
                         ? err.message
-                        : "Failed to create unit measurement"
+                        : "Failed to create payment method"
                 );
                 throw err;
             }
         },
-        [fetchUnitMeasurements]
+        [fetchPaymentMethods]
     );
 
-    const updateUnitMeasurement = useCallback(
-        async (id: number, data: Omit<UnitMeasurement, "id" | "clerkId">) => {
+    const updatePaymentMethod = useCallback(
+        async (id: number, data: Omit<PaymentMethod, "id" | "clerkId">) => {
             try {
                 const response = await fetch(
-                    `/api/settings/unit-measurements/${id}`,
+                    `/api/settings/payment-methods/${id}`,
                     {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
@@ -65,55 +60,55 @@ export function useUnitMeasurements() {
                     }
                 );
                 if (!response.ok)
-                    throw new Error("Failed to update unit measurement");
-                await fetchUnitMeasurements();
+                    throw new Error("Failed to update payment method");
+                await fetchPaymentMethods();
             } catch (err) {
                 setError(
                     err instanceof Error
                         ? err.message
-                        : "Failed to update unit measurement"
+                        : "Failed to update payment method"
                 );
                 throw err;
             }
         },
-        [fetchUnitMeasurements]
+        [fetchPaymentMethods]
     );
 
-    const deleteUnitMeasurement = useCallback(
+    const deletePaymentMethod = useCallback(
         async (id: number) => {
             try {
                 const response = await fetch(
-                    `/api/settings/unit-measurements/${id}`,
+                    `/api/settings/payment-methods/${id}`,
                     {
                         method: "DELETE",
                     }
                 );
                 if (!response.ok)
-                    throw new Error("Failed to delete unit measurement");
-                await fetchUnitMeasurements();
+                    throw new Error("Failed to delete payment method");
+                await fetchPaymentMethods();
             } catch (err) {
                 setError(
                     err instanceof Error
                         ? err.message
-                        : "Failed to delete unit measurement"
+                        : "Failed to delete payment method"
                 );
                 throw err;
             }
         },
-        [fetchUnitMeasurements]
+        [fetchPaymentMethods]
     );
 
     useEffect(() => {
-        fetchUnitMeasurements();
-    }, [fetchUnitMeasurements]);
+        fetchPaymentMethods();
+    }, [fetchPaymentMethods]);
 
     return {
-        unitMeasurements,
+        paymentMethods,
         loading,
         error,
-        createUnitMeasurement,
-        updateUnitMeasurement,
-        deleteUnitMeasurement,
-        refreshUnitMeasurements: fetchUnitMeasurements,
+        createPaymentMethod,
+        updatePaymentMethod,
+        deletePaymentMethod,
+        refreshPaymentMethods: fetchPaymentMethods,
     };
 }

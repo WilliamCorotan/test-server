@@ -1,7 +1,6 @@
 import { Package, PackageCheck, PackageX } from "lucide-react";
 import { ProductSummaryCard } from "./ProductSummaryCard";
 import { Product } from "@/types";
-// import { Product } from "./types";
 
 interface ProductSummaryProps {
     products: Product[];

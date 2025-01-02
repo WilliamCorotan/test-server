@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { Payment } from "@/types";
+import { PaymentMethod } from "@/types";
 
 export function usePaymentMethods() {
-    const [paymentMethods, setPaymentMethods] = useState<Payment[]>([]);
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +26,7 @@ export function usePaymentMethods() {
     }, []);
 
     const createPaymentMethod = useCallback(
-        async (data: Omit<Payment, "id" | "clerkId">) => {
+        async (data: Omit<PaymentMethod, "id" | "clerkId">) => {
             try {
                 const response = await fetch("/api/settings/payment-methods", {
                     method: "POST",
@@ -49,7 +49,7 @@ export function usePaymentMethods() {
     );
 
     const updatePaymentMethod = useCallback(
-        async (id: number, data: Omit<Payment, "id" | "clerkId">) => {
+        async (id: number, data: Omit<PaymentMethod, "id" | "clerkId">) => {
             try {
                 const response = await fetch(
                     `/api/settings/payment-methods/${id}`,

@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
+import { Transaction, Order } from "@/types";
 
-interface Transaction {
-    id: number;
-    paymentMethodId: number;
-    dateOfTransaction: string;
-    emailTo: string | null;
-    cashReceived: number | null;
-    totalPrice: number;
-    status: string;
-}
+// interface Transaction {
+//     id: number;
+//     paymentMethodId: number;
+//     dateOfTransaction: string;
+//     emailTo: string | null;
+//     cashReceived: number | null;
+//     totalPrice: number;
+//     status: string;
+// }
 
-interface Order {
-    productId: number;
-    quantity: number;
-    price: number;
-}
+// interface Order {
+//     productId: number;
+//     quantity: number;
+//     price: number;
+// }
 
 export function useTransactions() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);

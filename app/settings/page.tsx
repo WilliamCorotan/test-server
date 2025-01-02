@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
+    TableCell,
     TableHead,
     TableHeader,
     TableRow,
@@ -13,8 +14,7 @@ import {
 import { UnitMeasurementForm } from "@/components/settings/UnitMeasurementForm";
 import { PaymentMethodForm } from "@/components/settings/PaymentMethodForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UnitMeasurementList } from "@/components/settings/UnitMeasurementList";
-import { PaymentMethodList } from "@/components/settings/PaymentMethodList";
+import { usePaymentMethods } from "@/hooks/use-payments";
 
 export default function SettingsPage() {
     const { userId } = useAuth();
@@ -23,7 +23,7 @@ export default function SettingsPage() {
         useState(false);
     const [openPaymentMethodDialog, setOpenPaymentMethodDialog] =
         useState(false);
-
+    const {paymentMethods, refreshPaymentMethods} = usePaymentMethods();
     if (!userId) {
         return <div>Please sign in to view settings</div>;
     }
@@ -64,7 +64,7 @@ export default function SettingsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <UnitMeasurementList />
+                                {/* Unit measurements will be mapped here */}
                             </TableBody>
                         </Table>
                     </div>
@@ -91,7 +91,11 @@ export default function SettingsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <PaymentMethodList />
+                                {paymentMethods.map((paymentMethod) => (
+                                    <TableRow key={paymentMethod.id}>
+                                        <TableCell>{paymentMethod.name}</TableCell>
+                                    </TableRow>
+                                ))}
                             </TableBody>
                         </Table>
                     </div>
@@ -116,6 +120,8 @@ export default function SettingsPage() {
                                 "Failed to create unit measurement"
                             );
                         setOpenUnitMeasurementDialog(false);
+                        refreshPaymentMethods();
+                        // Refresh the list
                     } catch (error) {
                         console.error(
                             "Error creating unit measurement:",
@@ -142,6 +148,7 @@ export default function SettingsPage() {
                         if (!response.ok)
                             throw new Error("Failed to create payment method");
                         setOpenPaymentMethodDialog(false);
+                        // Refresh the list
                     } catch (error) {
                         console.error("Error creating payment method:", error);
                     }

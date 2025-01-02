@@ -10,30 +10,45 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-    console.log('checkk >>', req.headers);
+    console.log("checkk >>", req.headers);
 
     // For mobile app requests, validate the bearer token
     if (req.headers.get("authorization")) {
         const userId = await validateToken(req);
         if (!userId && isProtectedRoute(req)) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
         }
         // Add the userId to the request headers for use in API routes
         const requestHeaders = new Headers(req.headers);
-        requestHeaders.set("x-clerk-user-id", userId ?? '');
+        requestHeaders.set("x-clerk-user-id", userId ?? "");
         return NextResponse.next({
             request: {
                 headers: requestHeaders,
             },
         });
-    } else {   
+    } else {
         const { userId, redirectToSignIn } = await auth();
         if (!userId && isProtectedRoute(req)) {
             return redirectToSignIn();
         }
-        console.log('in here', userId);
+
+        if (!userId) {
+            if (req.nextUrl.pathname === "/") {
+                return NextResponse.redirect(new URL("/sign-in", req.url));
+            }
+            return redirectToSignIn();
+        }
+
+        if (req.nextUrl.pathname === "/") {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
+
+        console.log("in here", userId);
         const requestHeaders = new Headers(req.headers);
-        requestHeaders.set("x-clerk-user-id", userId ?? '');
+        requestHeaders.set("x-clerk-user-id", userId ?? "");
         return NextResponse.next({
             request: {
                 headers: requestHeaders,

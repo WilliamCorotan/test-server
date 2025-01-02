@@ -8,13 +8,22 @@ export async function getProducts(userId: string) {
 }
 
 export async function createProduct(data: Product, userId: string) {
+    console.log("checkk >> before: ", data);
     return db.insert(products).values({
         ...data,
+        unitMeasurementsId:
+            data.unitMeasurementsId === 0 ? null : data.unitMeasurementsId,
         clerkId: userId,
     });
 }
 
 export async function updateProduct(id: number, data: Product, userId: string) {
+    if (data.unitMeasurementsId === 0) {
+        data.unitMeasurementsId = undefined;
+    }
+
+    data.clerkId = userId;
+
     return db
         .update(products)
         .set(data)

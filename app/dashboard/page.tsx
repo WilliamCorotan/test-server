@@ -99,7 +99,10 @@ export default function DashboardPage() {
         <div className="container mx-auto p-6 space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Dashboard</h1>
-                <Button onClick={() => router.push('/qr')} className="flex items-center gap-2">
+                <Button
+                    onClick={() => router.push("/qr")}
+                    className="flex items-center gap-2"
+                >
                     <QrCode className="h-4 w-4" />
                     Show QR Code
                 </Button>

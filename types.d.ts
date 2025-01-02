@@ -1,6 +1,6 @@
-export type DateRange = 'week' | 'month' | '3months';
+export type DateRange = "week" | "month" | "3months";
 
-export type ExportType = 'transactions' | 'products';
+export type ExportType = "transactions" | "products";
 
 export type ProductSalesSummary = {
     productId: number;
@@ -8,7 +8,7 @@ export type ProductSalesSummary = {
     totalQuantity: number;
     totalAmount: number;
     averagePrice: number;
-}
+};
 
 export type Product = {
     id: number;
@@ -21,9 +21,9 @@ export type Product = {
     stock: number;
     lowStockLevel?: number;
     expirationDate?: string;
-    unitMeasurementsId: number;
+    unitMeasurementsId?: number;
     clerkId: string;
-}
+};
 
 export type Order = {
     id: number;
@@ -31,7 +31,7 @@ export type Order = {
     quantity: number;
     price: number;
     clerkId: string;
-}
+};
 
 export type TransactionItem = {
     id: number;
@@ -39,7 +39,7 @@ export type TransactionItem = {
     productName: string;
     quantity: number;
     productSellPrice: number;
-}
+};
 
 export type Transaction = {
     id: number;
@@ -51,7 +51,7 @@ export type Transaction = {
     emailTo?: string;
     clerkId?: string;
     items: string;
-}
+};
 
 export type Product = {
     id: number;
@@ -66,7 +66,7 @@ export type Product = {
     expirationDate?: string;
     unitMeasurementsId: number;
     clerkId: string;
-}
+};
 
 export type ProductFormData = {
     id?: number;
@@ -88,10 +88,10 @@ export type UnitMeasurement = {
     name: string;
     symbol: string;
     clerkId: string;
-}
+};
 
 export type PaymentMethod = {
     id: number;
     name: string;
     clerkId: string;
-}
+};

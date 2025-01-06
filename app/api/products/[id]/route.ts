@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+// import { auth } from "@clerk/nextjs/server";
+import { getCurrentUserId } from "@/lib/api/base";
 import { updateProduct, deleteProduct } from "@/lib/api/products";
 
 export async function PUT(request: Request, { params }: { params: any }) {
-    const { userId } = auth();
+    // const { userId } = auth();
+    const userId = await getCurrentUserId();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -34,7 +36,8 @@ export async function PUT(request: Request, { params }: { params: any }) {
 }
 
 export async function DELETE(request: Request, { params }: { params: any }) {
-    const { userId } = auth();
+    // const { userId } = auth();
+    const userId = await getCurrentUserId();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

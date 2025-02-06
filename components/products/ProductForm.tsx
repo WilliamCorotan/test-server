@@ -28,6 +28,7 @@ const defaultFormData: ProductFormData = {
     sellPrice: 0,
     stock: 0,
     lowStockLevel: 0,
+    expirationDate: "",
 };
 
 export function ProductForm({
@@ -49,6 +50,7 @@ export function ProductForm({
                 sellPrice: initialData.sellPrice,
                 stock: initialData.stock,
                 lowStockLevel: initialData.lowStockLevel || 0,
+                expirationDate: initialData.expirationDate || "",
             });
         } else {
             setFormData(defaultFormData);
@@ -194,6 +196,27 @@ export function ProductForm({
                                     setFormData({
                                         ...formData,
                                         lowStockLevel: parseInt(e.target.value),
+                                    })
+                                }
+                                className="col-span-3"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label
+                                htmlFor="expirationDate"
+                                className="text-right"
+                            >
+                                Expiration Date
+                            </Label>
+                            <Input
+                                id="expirationDate"
+                                type="date"
+                                value={formData.expirationDate}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        expirationDate: e.target.value,
                                     })
                                 }
                                 className="col-span-3"

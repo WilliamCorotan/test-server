@@ -79,6 +79,7 @@ export const products = sqliteTable("products", {
         () => unitMeasurements.id
     ),
     clerkId: text("clerk_id").notNull(), // Add clerk ID for product ownership
+    deleted: text("deleted"),
 });
 
 export const transactions = sqliteTable("transactions", {

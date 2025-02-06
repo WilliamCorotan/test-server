@@ -3,6 +3,7 @@ import { contactsAndSettings } from "./01-contacts-and-settings";
 import { productsSetup } from "./02-products-setup";
 import { transactionsSetup } from "./03-transactions-setup";
 import { addClerkId } from "./04-add-clerk-id";
+import { addDeletedColumn } from "./05-add-deleted-column";
 
 export async function runMigrations() {
     try {
@@ -22,6 +23,9 @@ export async function runMigrations() {
 
         await addClerkId();
         console.log("✓ Added Clerk ID support");
+
+        await addDeletedColumn();
+        console.log("✓ Added deleted column");
 
         console.log("All migrations completed successfully");
     } catch (error) {

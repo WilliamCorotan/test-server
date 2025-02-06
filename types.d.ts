@@ -51,6 +51,7 @@ export type Transaction = {
     emailTo?: string;
     clerkId?: string;
     items: string;
+    paymentMethodName?: string;
 };
 
 export type Product = {

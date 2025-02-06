@@ -11,7 +11,7 @@ type TransactionFromApp = {
     cash_received: string;
     email_to?: string;
     clerk_id?: string;
-}
+};
 
 type TransactionItemFromApp = {
     id: number;
@@ -19,7 +19,7 @@ type TransactionItemFromApp = {
     quantity: number;
     price: number;
     clerk_id: string;
-}
+};
 
 export async function getTransactions(userId: string) {
     return db
@@ -36,8 +36,8 @@ export async function getTransactions(userId: string) {
                 FROM ${orders}
                 JOIN ${products} ON ${orders.productId} = ${products.id}
                 WHERE ${orders.transactionId} = ${transactions.id}
-            )`.as('items')
-
+            )`.as("items"),
+            paymentMethodName: payments.name,
         })
         .from(transactions)
         .leftJoin(payments, eq(transactions.paymentMethodId, payments.id))
@@ -49,11 +49,16 @@ export async function createTransaction(
     items: TransactionItemFromApp[],
     userId: string
 ) {
-
     try {
-        
         const date = new Date(data.date_of_transaction);
-        const dateOfTransaction = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+        const dateOfTransaction = `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+        ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(
+            date.getHours()
+        ).padStart(2, "0")}:${String(date.getMinutes()).padStart(
+            2,
+            "0"
+        )}:${String(date.getSeconds()).padStart(2, "0")}`;
 
         const insertData = {
             ...data,
@@ -67,11 +72,14 @@ export async function createTransaction(
 
         const newTransaction = await db.insert(transactions).values(insertData);
 
-        console.log('items:', items);
+        console.log("items:", items);
         // Insert transaction items
         for (const item of items) {
             await db.insert(orders).values({
-                transactionId: parseInt(newTransaction.lastInsertRowid?.toString() ?? '') ?? null,
+                transactionId:
+                    parseInt(
+                        newTransaction.lastInsertRowid?.toString() ?? ""
+                    ) ?? null,
                 clerkId: userId,
                 productId: item.product_id ?? null,
                 quantity: item.quantity ?? null,
@@ -80,8 +88,7 @@ export async function createTransaction(
 
         return newTransaction;
     } catch (error) {
-        console.error('Error creating transaction:', error);
+        console.error("Error creating transaction:", error);
         throw error;
     }
-
 }

@@ -11,7 +11,7 @@ import {
 export default function TransactionList() {
     const { transactions, loading, error } = useTransactions();
 
-    console.log('transactions:', transactions);
+    console.log("transactions:", transactions);
 
     if (loading) {
         return <div>Loading transactions...</div>;
@@ -21,6 +21,7 @@ export default function TransactionList() {
         return <div>Error: {error}</div>;
     }
 
+    console.log("a", transactions);
     return (
         <div className="rounded-md border">
             <Table>
@@ -40,10 +41,10 @@ export default function TransactionList() {
                                     transaction.dateOfTransaction
                                 ).toLocaleDateString()}
                             </TableCell>
+                            <TableCell>PHP{transaction.totalPrice}</TableCell>
                             <TableCell>
-                                PHP{transaction.totalPrice}
+                                {transaction.paymentMethodName}
                             </TableCell>
-                            <TableCell>{transaction.paymentMethodId}</TableCell>
                             <TableCell>{transaction.status}</TableCell>
                         </TableRow>
                     ))}

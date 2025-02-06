@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PaymentMethod } from "@/types";
 
 interface PaymentMethodFormData {
     name: string;
@@ -19,7 +20,7 @@ interface PaymentMethodFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (data: PaymentMethodFormData) => void;
-    initialData?: PaymentMethodFormData | null;
+    initialData?: PaymentMethod | null;
     mode: "create" | "edit";
 }
 
@@ -30,9 +31,18 @@ export function PaymentMethodForm({
     initialData,
     mode,
 }: PaymentMethodFormProps) {
-    const [formData, setFormData] = useState<PaymentMethodFormData>(
-        initialData || { name: "" }
-    );
+    const [formData, setFormData] = useState<PaymentMethodFormData>({
+        name: "",
+    });
+
+    // Update form data when initialData changes
+    useEffect(() => {
+        if (initialData) {
+            setFormData({ name: initialData.name });
+        } else {
+            setFormData({ name: "" });
+        }
+    }, [initialData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

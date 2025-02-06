@@ -61,33 +61,63 @@ export async function createTransaction(
             "0"
         )}:${String(date.getSeconds()).padStart(2, "0")}`;
 
-        const insertData = {
-            ...data,
-            paymentMethodId: parseInt(data.payment_method_id),
-            dateOfTransaction: dateOfTransaction,
-            emailTo: data.email_to ?? null,
-            totalPrice: parseFloat(data.total_price),
-            cashReceived: parseFloat(data.cash_received),
-            clerkId: userId,
-        };
-
-        const newTransaction = await db.insert(transactions).values(insertData);
-
-        console.log("items:", items);
-        // Insert transaction items
-        for (const item of items) {
-            await db.insert(orders).values({
-                transactionId:
-                    parseInt(
-                        newTransaction.lastInsertRowid?.toString() ?? ""
-                    ) ?? null,
+        // Start a transaction to ensure all operations succeed or fail together
+        await db.transaction(async (tx) => {
+            // 1. Create the transaction record
+            const insertData = {
+                ...data,
+                paymentMethodId: parseInt(data.payment_method_id),
+                dateOfTransaction: dateOfTransaction,
+                emailTo: data.email_to ?? null,
+                totalPrice: parseFloat(data.total_price),
+                cashReceived: parseFloat(data.cash_received),
                 clerkId: userId,
-                productId: item.product_id ?? null,
-                quantity: item.quantity ?? null,
-            });
-        }
+            };
 
-        return newTransaction;
+            const newTransaction = await tx
+                .insert(transactions)
+                .values(insertData);
+            const transactionId = parseInt(
+                newTransaction.lastInsertRowid?.toString() ?? ""
+            );
+
+            // 2. Process each item
+            for (const item of items) {
+                // First get the current product to check stock
+                const [product] = await tx
+                    .select()
+                    .from(products)
+                    .where(eq(products.id, item.product_id));
+
+                if (!product) {
+                    throw new Error(`Product ${item.product_id} not found`);
+                }
+
+                if (product.stock < item.quantity) {
+                    throw new Error(
+                        `Insufficient stock for product ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`
+                    );
+                }
+
+                // Update product stock
+                await tx
+                    .update(products)
+                    .set({
+                        stock: product.stock - item.quantity,
+                    })
+                    .where(eq(products.id, item.product_id));
+
+                // Create order record
+                await tx.insert(orders).values({
+                    transactionId,
+                    clerkId: userId,
+                    productId: item.product_id,
+                    quantity: item.quantity,
+                });
+            }
+        });
+
+        return { success: true };
     } catch (error) {
         console.error("Error creating transaction:", error);
         throw error;

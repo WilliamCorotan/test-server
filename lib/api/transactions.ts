@@ -31,6 +31,7 @@ export async function getTransactions(userId: string) {
                     'productId', ${products.id},
                     'productName', ${products.name},
                     'productSellPrice', ${products.sellPrice},
+                    'productBuyPrice', ${products.buyPrice},
                     'quantity', ${orders.quantity}
                 ))
                 FROM ${orders}

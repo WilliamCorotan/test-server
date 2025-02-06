@@ -1,4 +1,10 @@
-export type DateRange = "week" | "month" | "3months";
+export type DateRange =
+    | "daily"
+    | "yesterday"
+    | "week"
+    | "month"
+    | "3months"
+    | "annual";
 
 export type ExportType = "transactions" | "products";
 
@@ -6,8 +12,10 @@ export type ProductSalesSummary = {
     productId: number;
     name: string;
     totalQuantity: number;
-    totalAmount: number;
-    averagePrice: number;
+    totalBuyAmount: number;
+    totalSellAmount: number;
+    profit: number;
+    profitMargin: number;
 };
 
 export type Product = {
@@ -39,6 +47,7 @@ export type TransactionItem = {
     productName: string;
     quantity: number;
     productSellPrice: number;
+    productBuyPrice: number;
 };
 
 export type Transaction = {

@@ -2,7 +2,14 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, DollarSign, TrendingUp, QrCode } from "lucide-react";
+import {
+    Package,
+    TrendingUp,
+    QrCode,
+    Receipt,
+    Wallet,
+    PiggyBank,
+} from "lucide-react";
 import { AreaChart, BarChart } from "@tremor/react";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useMemo } from "react";
@@ -65,6 +72,25 @@ export default function DashboardPage() {
             (sum, transaction) => sum + transaction.totalPrice,
             0
         );
+
+        // Calculate total cost from items
+        const totalCost = monthTransactions.reduce((sum, transaction) => {
+            const items = JSON.parse(transaction.items || "[]");
+            return (
+                sum +
+                items.reduce(
+                    (itemSum: number, item: any) =>
+                        itemSum + item.quantity * (item.productBuyPrice || 0),
+                    0
+                )
+            );
+        }, 0);
+
+        // Calculate margin
+        const margin = totalSales - totalCost;
+        const marginPercentage =
+            totalSales > 0 ? (margin / totalSales) * 100 : 0;
+
         const totalProducts = monthTransactions.length;
 
         // Calculate performance (comparing to previous month)
@@ -86,6 +112,9 @@ export default function DashboardPage() {
 
         return {
             totalSales,
+            totalCost,
+            margin,
+            marginPercentage,
             totalProducts,
             performance,
         };
@@ -130,9 +159,9 @@ export default function DashboardPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Sales
+                            Revenue
                         </CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <Receipt className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
@@ -140,6 +169,41 @@ export default function DashboardPage() {
                         </div>
                         <p className="text-xs text-muted-foreground">
                             This month
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Cost
+                        </CardTitle>
+                        <Wallet className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">
+                            PHP{currentMonthMetrics.totalCost.toFixed(2)}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            This month
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                            Margin
+                        </CardTitle>
+                        <PiggyBank className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">
+                            PHP{currentMonthMetrics.margin.toFixed(2)}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            {currentMonthMetrics.marginPercentage.toFixed(1)}%
+                            margin
                         </p>
                     </CardContent>
                 </Card>

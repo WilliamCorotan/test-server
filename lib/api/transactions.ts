@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { transactions, orders, payments, products } from "@/lib/db/schema";
-import { eq, sql, getTableColumns } from "drizzle-orm";
+import { eq, sql, getTableColumns, and } from "drizzle-orm";
 
 type TransactionFromApp = {
     id: number;
@@ -122,4 +122,12 @@ export async function createTransaction(
         console.error("Error creating transaction:", error);
         throw error;
     }
+}
+
+export async function updateTransaction(id: number, data: any, userId: string) {
+    return db
+        .update(transactions)
+        .set(data)
+        .where(and(eq(transactions.id, id), eq(transactions.clerkId, userId)))
+        .returning();
 }

@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 
 export async function addDeletedColumn() {
     try {
-        const tables = ["products"];
+        const tables = ["products", "product_categories", "payments"];
 
         for (const table of tables) {
             // Check if the column already exists

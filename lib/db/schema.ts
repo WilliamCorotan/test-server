@@ -12,6 +12,7 @@ export const payments = sqliteTable("payments", {
     id: integer("id").primaryKey(),
     name: text("name"),
     clerkId: text("clerk_id").notNull(), // Add clerk ID for payment method ownership
+    deleted: text("deleted"),
 });
 
 export const users = sqliteTable("users", {
@@ -62,6 +63,7 @@ export const productCategories = sqliteTable("product_categories", {
     name: text("name"),
     description: text("description"),
     clerkId: text("clerk_id").notNull(), // Add clerk ID for category ownership
+    deleted: text("deleted"),
 });
 
 export const products = sqliteTable("products", {

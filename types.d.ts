@@ -30,6 +30,14 @@ export type Product = {
     lowStockLevel?: number;
     expirationDate?: string;
     unitMeasurementsId?: number;
+    categoryId?: number;
+    clerkId: string;
+};
+
+export type Category = {
+    id: number;
+    name: string;
+    description?: string;
     clerkId: string;
 };
 
@@ -63,21 +71,6 @@ export type Transaction = {
     paymentMethodName?: string;
 };
 
-export type Product = {
-    id: number;
-    name: string;
-    code: string;
-    description?: string;
-    image?: string;
-    buyPrice: number;
-    sellPrice: number;
-    stock: number;
-    lowStockLevel?: number;
-    expirationDate?: string;
-    unitMeasurementsId: number;
-    clerkId: string;
-};
-
 export type ProductFormData = {
     id?: number;
     name: string;
@@ -90,6 +83,7 @@ export type ProductFormData = {
     lowStockLevel?: number;
     expirationDate?: string;
     unitMeasurementsId?: number;
+    categoryId?: number;
     clerkId?: string;
 };
 

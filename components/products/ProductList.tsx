@@ -55,7 +55,7 @@ export default function ProductList() {
                 image: data.image || undefined,
                 expirationDate: data.expirationDate || undefined,
                 unitMeasurementsId: data.unitMeasurementsId ?? 0,
-                clerkId: data.clerkId || '',
+                clerkId: data.clerkId || "",
                 buyPrice: parseFloat(data.buyPrice.toString()),
                 sellPrice: parseFloat(data.sellPrice.toString()),
                 stock: parseInt(data.stock.toString()),

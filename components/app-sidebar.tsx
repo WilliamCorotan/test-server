@@ -3,6 +3,7 @@ import {
     LaptopMinimal,
     ScanBarcode,
     ShoppingCart,
+    FolderTree,
 } from "lucide-react";
 
 import {
@@ -28,6 +29,11 @@ const items = [
         title: "Products",
         url: "/products",
         icon: ScanBarcode,
+    },
+    {
+        title: "Categories",
+        url: "/categories",
+        icon: FolderTree,
     },
     {
         title: "Transactions",

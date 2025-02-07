@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/api/base";
 import { updateTransaction } from "@/lib/api/transactions";
 
-export async function PUT(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, { params }: { params: any }) {
     const userId = await getCurrentUserId();
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

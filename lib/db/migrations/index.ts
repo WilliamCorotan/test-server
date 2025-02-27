@@ -5,6 +5,7 @@ import { transactionsSetup } from "./03-transactions-setup";
 import { addClerkId } from "./04-add-clerk-id";
 import { addDeletedColumn } from "./05-add-deleted-column";
 import { addCategoryIdToProducts } from "./06-add-category-id";
+import { addRefundTables } from "./07-add-refund-tables";
 
 export async function runMigrations() {
   try {
@@ -30,6 +31,9 @@ export async function runMigrations() {
 
     await addCategoryIdToProducts();
     console.log("✓ Added category_id to products table");
+
+    await addRefundTables();
+    console.log("✓ Added refund tables");
 
     console.log("All migrations completed successfully");
   } catch (error) {

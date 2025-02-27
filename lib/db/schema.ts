@@ -102,6 +102,28 @@ export const orders = sqliteTable("orders", {
   quantity: integer("quantity").notNull(),
   transactionId: integer("transaction_id").references(() => transactions.id),
   clerkId: text("clerk_id").notNull(), // Add clerk ID for order ownership
+  refundedQuantity: integer("refunded_quantity").default(0),
+  refundStatus: text("refund_status").default("none"), // none, partial, full
+});
+
+export const refunds = sqliteTable("refunds", {
+  id: integer("id").primaryKey(),
+  transactionId: integer("transaction_id").references(() => transactions.id),
+  dateOfRefund: text("date_of_refund").notNull(),
+  totalAmount: real("total_amount").notNull(),
+  reason: text("reason"),
+  type: text("type").notNull(), // full, partial
+  clerkId: text("clerk_id").notNull(),
+});
+
+export const refundItems = sqliteTable("refund_items", {
+  id: integer("id").primaryKey(),
+  refundId: integer("refund_id").references(() => refunds.id),
+  orderId: integer("order_id").references(() => orders.id),
+  productId: integer("product_id").references(() => products.id),
+  quantity: integer("quantity").notNull(),
+  amount: real("amount").notNull(),
+  clerkId: text("clerk_id").notNull(),
 });
 
 export const transactionsHistory = sqliteTable("transactions_history", {

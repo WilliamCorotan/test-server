@@ -1,4 +1,3 @@
-import { useTransactions } from "@/hooks/use-transactions";
 import { useRefunds } from "@/hooks/use-refunds";
 import {
     Table,
@@ -11,12 +10,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { RefundForm } from "@/components/refunds/RefundForm";
-import { RefundFormData } from "@/types";
+import { RefundFormData, Transaction } from "@/types";
 import { format } from "date-fns";
 import { RefreshCcw } from "lucide-react";
+import { useTransactions } from "@/hooks/use-transactions";
 
-export default function TransactionList() {
-    const { transactions, loading, error, refreshTransactions } = useTransactions();
+interface TransactionListProps {
+    transactions: Transaction[];
+}
+
+export default function TransactionList({ transactions }: TransactionListProps) {
+    const { refreshTransactions } = useTransactions();
     const { createRefund } = useRefunds();
     const [openRefundDialog, setOpenRefundDialog] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState<number | null>(null);
@@ -37,14 +41,6 @@ export default function TransactionList() {
         } finally {
         }
     };
-
-    if (loading) {
-        return <div>Loading transactions...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
 
     return (
         <div className="space-y-4">
@@ -109,7 +105,7 @@ export default function TransactionList() {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={6} className="text-center py-4">
-                                    No transactions found
+                                    No transactions found for this period
                                 </TableCell>
                             </TableRow>
                         )}

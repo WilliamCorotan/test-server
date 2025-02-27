@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/api/base";
 import { v4 as uuidv4 } from "uuid";
-import { writeFile } from "fs/promises";
-import { join } from "path";
-import { mkdir } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export async function POST(request: Request) {
   const userId = await getCurrentUserId();
@@ -41,18 +40,34 @@ export async function POST(request: Request) {
     }
 
     // Create a unique filename
-    const fileExtension = file.name.split(".").pop();
+    const fileExtension = file.name.split(".").pop() || "jpg";
     const fileName = `${uuidv4()}.${fileExtension}`;
 
     // Create directory if it doesn't exist
-    const uploadDir = join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
+    const publicDir = path.join(process.cwd(), "public");
+    const uploadDir = path.join(publicDir, "uploads");
+
+    try {
+      await mkdir(uploadDir, { recursive: true });
+    } catch (err) {
+      console.error("Error creating directory:", err);
+    }
 
     // Save the file
-    const filePath = join(uploadDir, fileName);
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    await writeFile(filePath, buffer);
+    const filePath = path.join(uploadDir, fileName);
+
+    try {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      await writeFile(filePath, buffer);
+      console.log(`File saved to ${filePath}`);
+    } catch (err) {
+      console.error("Error writing file:", err);
+      return NextResponse.json(
+        { error: `Failed to write file [0]` },
+        { status: 500 }
+      );
+    }
 
     // Return the file URL
     const fileUrl = `/uploads/${fileName}`;
@@ -61,7 +76,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(
-      { error: "Failed to upload file" },
+      { error: `Failed to upload file [1]` },
       { status: 500 }
     );
   }

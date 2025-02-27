@@ -4,7 +4,6 @@ import { useAuth } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Package,
-    TrendingUp,
     QrCode,
     Receipt,
     Wallet,

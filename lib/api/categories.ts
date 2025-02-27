@@ -1,13 +1,13 @@
 import { db } from "@/lib/db";
 import { productCategories } from "@/lib/db/schema";
 import { Category } from "@/types";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 export async function getCategories(userId: string) {
     return db
         .select()
         .from(productCategories)
-        .where(eq(productCategories.clerkId, userId));
+        .where(and(eq(productCategories.clerkId, userId), isNull(productCategories.deleted)));
 }
 
 export async function createCategory(data: Category, userId: string) {

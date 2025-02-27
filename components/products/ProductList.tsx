@@ -14,10 +14,12 @@ import { Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { Product, ProductFormData } from "@/types";
 import { ProductSummary } from "./ProductSummary";
 import { format } from "date-fns";
+import { useCategories } from "@/hooks/use-categories";
 
 export default function ProductList() {
     const { products, loading, error, createProduct, refreshProducts } =
         useProducts();
+    const { categories } = useCategories();
     const [openDialog, setOpenDialog] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [mode, setMode] = useState<"create" | "edit">("create");
@@ -56,6 +58,7 @@ export default function ProductList() {
                 image: data.image || undefined,
                 expirationDate: data.expirationDate || undefined,
                 unitMeasurementsId: data.unitMeasurementsId ?? 0,
+                categoryId: data.categoryId,
                 clerkId: data.clerkId || "",
                 buyPrice: parseFloat(data.buyPrice.toString()),
                 sellPrice: parseFloat(data.sellPrice.toString()),
@@ -93,6 +96,12 @@ export default function ProductList() {
         return expirationDate < new Date();
     };
 
+    const getCategoryName = (categoryId?: number) => {
+        if (!categoryId) return "Uncategorized";
+        const category = categories.find(c => c.id === categoryId);
+        return category ? category.name : "Uncategorized";
+    };
+
     if (loading) {
         return <div>Loading products...</div>;
     }
@@ -114,6 +123,7 @@ export default function ProductList() {
                         <TableRow>
                             <TableHead>Code</TableHead>
                             <TableHead>Name</TableHead>
+                            <TableHead>Category</TableHead>
                             <TableHead>Stock</TableHead>
                             <TableHead>Buy Price</TableHead>
                             <TableHead>Sell Price</TableHead>
@@ -127,6 +137,7 @@ export default function ProductList() {
                             <TableRow key={product.id}>
                                 <TableCell>{product.code}</TableCell>
                                 <TableCell>{product.name}</TableCell>
+                                <TableCell>{getCategoryName(product.categoryId)}</TableCell>
                                 <TableCell>{product.stock}</TableCell>
                                 <TableCell>
                                     PHP{product.buyPrice.toFixed(2)}

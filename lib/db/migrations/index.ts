@@ -4,32 +4,36 @@ import { productsSetup } from "./02-products-setup";
 import { transactionsSetup } from "./03-transactions-setup";
 import { addClerkId } from "./04-add-clerk-id";
 import { addDeletedColumn } from "./05-add-deleted-column";
+import { addCategoryIdToProducts } from "./06-add-category-id";
 
 export async function runMigrations() {
-    try {
-        console.log("Running migrations...");
+  try {
+    console.log("Running migrations...");
 
-        await initialSetup();
-        console.log("✓ Initial setup complete");
+    await initialSetup();
+    console.log("✓ Initial setup complete");
 
-        await contactsAndSettings();
-        console.log("✓ Contacts and settings tables created");
+    await contactsAndSettings();
+    console.log("✓ Contacts and settings tables created");
 
-        await productsSetup();
-        console.log("✓ Products tables created");
+    await productsSetup();
+    console.log("✓ Products tables created");
 
-        await transactionsSetup();
-        console.log("✓ Transactions tables created");
+    await transactionsSetup();
+    console.log("✓ Transactions tables created");
 
-        await addClerkId();
-        console.log("✓ Added Clerk ID support");
+    await addClerkId();
+    console.log("✓ Added Clerk ID support");
 
-        await addDeletedColumn();
-        console.log("✓ Added deleted column");
+    await addDeletedColumn();
+    console.log("✓ Added deleted column");
 
-        console.log("All migrations completed successfully");
-    } catch (error) {
-        console.error("Migration failed:", error);
-        throw error;
-    }
+    await addCategoryIdToProducts();
+    console.log("✓ Added category_id to products table");
+
+    console.log("All migrations completed successfully");
+  } catch (error) {
+    console.error("Migration failed:", error);
+    throw error;
+  }
 }

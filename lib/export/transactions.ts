@@ -7,14 +7,18 @@ export const exportTransactions = async (transactions: Transaction[], range: Dat
 
     const filteredTransactions = filterTransactionsByDate(transactions, range);
     console.log('filteredTransactions:', filteredTransactions);
-    const data  = filteredTransactions.map(transaction => ({
-        'Transaction ID': transaction.id,
-        'Date': format(new Date(transaction.dateOfTransaction), 'MM/dd/yyyy HH:mm:ss'),
-        'Total Amount': `PHP ${transaction.totalPrice.toFixed(2)}`,
-        'Payment Method': transaction.paymentMethodId,
-        'Status': transaction.status,
-        'Cash Received': transaction.cashReceived ? `PHP ${transaction.cashReceived.toFixed(2)}` : '-',
-        'Email': transaction.emailTo || '-'
+    const data = filteredTransactions.map((transaction) => ({
+      "Transaction ID": transaction.id,
+      Date: format(
+        new Date(transaction.dateOfTransaction),
+        "MM/dd/yyyy HH:mm:ss"
+      ),
+      "Total Amount": `PHP ${transaction.totalPrice.toFixed(2)}`,
+      "Payment Method": transaction.paymentMethodName,
+      Status: transaction.status,
+      "Cash Received": transaction.cashReceived
+        ? `PHP ${transaction.cashReceived.toFixed(2)}`
+        : "-",
     }));
 
     const wb = XLSX.utils.book_new();

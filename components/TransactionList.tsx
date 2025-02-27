@@ -13,7 +13,7 @@ import { useState } from "react";
 import { RefundForm } from "@/components/refunds/RefundForm";
 import { RefundFormData } from "@/types";
 import { format } from "date-fns";
-import {  RefreshCcw } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 
 export default function TransactionList() {
     const { transactions, loading, error, refreshTransactions } = useTransactions();
@@ -85,12 +85,21 @@ export default function TransactionList() {
                                     <TableCell>
                                         {transaction.paymentMethodName}
                                     </TableCell>
-                                    <TableCell>{transaction.status}</TableCell>
+                                    <TableCell>
+                                        {transaction.status === 'refunded' ? (
+                                            <span className="text-red-500">Refunded</span>
+                                        ) : transaction.status === 'partially_refunded' ? (
+                                            <span className="text-amber-500">Partially Refunded</span>
+                                        ) : (
+                                            transaction.status
+                                        )}
+                                    </TableCell>
                                     <TableCell className="text-right">
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleRefund(transaction.id)}
+                                            disabled={transaction.status === 'refunded'}
                                         >
                                             Refund
                                         </Button>

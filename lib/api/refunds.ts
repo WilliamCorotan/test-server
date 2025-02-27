@@ -1,7 +1,13 @@
 import { db } from "@/lib/db";
-import { refunds, refundItems, orders, products } from "@/lib/db/schema";
+import {
+  refunds,
+  refundItems,
+  orders,
+  products,
+  transactions,
+} from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { RefundFormData } from "@/types";
+import { RefundFormData, RefundItem } from "@/types";
 
 export async function createRefund(data: RefundFormData, userId: string) {
   try {
@@ -84,6 +90,46 @@ export async function createRefund(data: RefundFormData, userId: string) {
               stock: product.stock + item.quantityToRefund,
             })
             .where(eq(products.id, item.productId));
+        }
+      }
+
+      // 3. Update transaction status to refunded
+      if (data.type === "full") {
+        // For full refunds, set the transaction status to refunded
+        await tx
+          .update(transactions)
+          .set({
+            status: "refunded",
+          })
+          .where(eq(transactions.id, data.transactionId));
+      } else {
+        // For partial refunds, check if all items are fully refunded
+        const allOrders = await tx
+          .select()
+          .from(orders)
+          .where(eq(orders.transactionId, data.transactionId));
+
+        const allFullyRefunded = allOrders.every(
+          (order) =>
+            order.refundStatus === "full" ||
+            (order.refundedQuantity && order.refundedQuantity >= order.quantity)
+        );
+
+        if (allFullyRefunded) {
+          await tx
+            .update(transactions)
+            .set({
+              status: "refunded",
+            })
+            .where(eq(transactions.id, data.transactionId));
+        } else {
+          // If not all items are fully refunded, set status to partially_refunded
+          await tx
+            .update(transactions)
+            .set({
+              status: "partially_refunded",
+            })
+            .where(eq(transactions.id, data.transactionId));
         }
       }
 

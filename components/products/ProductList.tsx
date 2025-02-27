@@ -10,11 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
-import { Pencil, Trash2, AlertTriangle } from "lucide-react";
+import { Pencil, Trash2, AlertTriangle, ImageOff } from "lucide-react";
 import { Product, ProductFormData } from "@/types";
 import { ProductSummary } from "./ProductSummary";
 import { format } from "date-fns";
 import { useCategories } from "@/hooks/use-categories";
+import Image from "next/image";
 
 export default function ProductList() {
     const { products, loading, error, createProduct, refreshProducts } =
@@ -55,7 +56,7 @@ export default function ProductList() {
             const processedData = {
                 ...data,
                 description: data.description || undefined,
-                image: data.image || undefined,
+                imageUrl: data.imageUrl || undefined,
                 expirationDate: data.expirationDate || undefined,
                 unitMeasurementsId: data.unitMeasurementsId ?? 0,
                 categoryId: data.categoryId,
@@ -121,6 +122,7 @@ export default function ProductList() {
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead>Image</TableHead>
                             <TableHead>Code</TableHead>
                             <TableHead>Name</TableHead>
                             <TableHead>Category</TableHead>
@@ -135,6 +137,22 @@ export default function ProductList() {
                     <TableBody>
                         {products.map((product) => (
                             <TableRow key={product.id}>
+                                <TableCell>
+                                    {product.imageUrl ? (
+                                        <div className="relative h-10 w-10 rounded-md overflow-hidden">
+                                            <Image
+                                                src={product.imageUrl}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
+                                            <ImageOff className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                    )}
+                                </TableCell>
                                 <TableCell>{product.code}</TableCell>
                                 <TableCell>{product.name}</TableCell>
                                 <TableCell>{getCategoryName(product.categoryId)}</TableCell>

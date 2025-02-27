@@ -72,6 +72,7 @@ export const products = sqliteTable("products", {
   code: text("code").notNull(),
   description: text("description"),
   image: text("image").references(() => files.id),
+  imageUrl: text("image_url"),
   buyPrice: real("buy_price").notNull(),
   sellPrice: real("sell_price").notNull(),
   stock: integer("stock").notNull(),

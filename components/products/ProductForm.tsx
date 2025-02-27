@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ImageIcon, Loader2, X } from "lucide-react";
+import Image from "next/image";
 
 interface ProductFormProps {
   open: boolean;
@@ -49,6 +51,9 @@ export function ProductForm({
 }: ProductFormProps) {
   const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
   const { categories } = useCategories();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -56,6 +61,7 @@ export function ProductForm({
         name: initialData.name,
         code: initialData.code,
         description: initialData.description || "",
+        imageUrl: initialData.imageUrl || "",
         buyPrice: initialData.buyPrice,
         sellPrice: initialData.sellPrice,
         stock: initialData.stock,
@@ -63,14 +69,73 @@ export function ProductForm({
         expirationDate: initialData.expirationDate || "",
         categoryId: initialData.categoryId || 0,
       });
+
+      if (initialData.imageUrl) {
+        setImagePreview(initialData.imageUrl);
+      } else {
+        setImagePreview(null);
+      }
     } else {
       setFormData(defaultFormData);
+      setImagePreview(null);
     }
   }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create a preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload the file
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to upload image");
+      }
+
+      const data = await response.json();
+      setFormData((prev) => ({
+        ...prev,
+        imageUrl: data.url,
+      }));
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image. Please try again.");
+      setImagePreview(null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview(null);
+    setFormData((prev) => ({
+      ...prev,
+      imageUrl: undefined,
+    }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -167,6 +232,52 @@ export function ProductForm({
                 className="col-span-3"
               />
             </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="image" className="text-right pt-2">
+                Image
+              </Label>
+              <div className="col-span-3 space-y-2">
+                {imagePreview ? (
+                  <div className="relative w-full h-40 border rounded-md overflow-hidden">
+                    <Image
+                      src={imagePreview}
+                      alt="Product preview"
+                      fill
+                      className="object-contain"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 h-6 w-6"
+                      onClick={handleRemoveImage}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="border border-dashed rounded-md p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <ImageIcon className="h-8 w-8" />
+                    <p className="text-sm">No image selected</p>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={fileInputRef}
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="flex-1"
+                    disabled={isUploading}
+                  />
+                  {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Supported formats: JPEG, PNG, WebP, GIF. Max size: 5MB.
+                </p>
+              </div>
+            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="buyPrice" className="text-right">
                 Buy Price
@@ -260,8 +371,17 @@ export function ProductForm({
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">
-              {mode === "create" ? "Create" : "Save"}
+            <Button type="submit" disabled={isUploading}>
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : mode === "create" ? (
+                "Create"
+              ) : (
+                "Save"
+              )}
             </Button>
           </DialogFooter>
         </form>

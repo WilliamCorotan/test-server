@@ -24,6 +24,7 @@ export type Product = {
   code: string;
   description?: string;
   image?: string;
+  imageUrl?: string;
   buyPrice: number;
   sellPrice: number;
   stock: number;
@@ -81,6 +82,8 @@ export type ProductFormData = {
   code: string;
   description?: string;
   image?: string;
+  imageUrl?: string;
+  imageFile?: File;
   buyPrice: number;
   sellPrice: number;
   stock: number;

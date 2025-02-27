@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { unitMeasurements, payments } from "@/lib/db/schema";
 import { PaymentMethod, UnitMeasurement } from "@/types";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 // Unit Measurements
 export async function getUnitMeasurements(userId: string) {
@@ -48,7 +48,8 @@ export async function deleteUnitMeasurement(id: number, userId: string) {
 
 // Payment Methods
 export async function getPaymentMethods(userId: string) {
-    return db.select().from(payments).where(eq(payments.clerkId, userId));
+    return db.select().from(payments)
+    .where(and(eq(payments.clerkId, userId),  isNull(payments.deleted)));
 }
 
 export async function createPaymentMethod(data: PaymentMethod, userId: string) {

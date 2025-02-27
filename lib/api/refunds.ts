@@ -7,7 +7,7 @@ import {
   transactions,
 } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { RefundFormData, RefundItem } from "@/types";
+import { RefundFormData } from "@/types";
 
 export async function createRefund(data: RefundFormData, userId: string) {
   try {

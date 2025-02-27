@@ -3,14 +3,16 @@
 import { useAuth } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Package,
-    QrCode,
-    Receipt,
-    Wallet,
-    PiggyBank,
+  Package,
+  QrCode,
+  Receipt,
+  Wallet,
+  PiggyBank,
+  AlertTriangle,
 } from "lucide-react";
 import { AreaChart, BarChart } from "@tremor/react";
 import { useTransactions } from "@/hooks/use-transactions";
+import { useProducts } from "@/hooks/use-products";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -31,10 +33,12 @@ import {
 } from "@/components/ui/select";
 import { DateRange, TransactionItem } from "@/types";
 import { filterTransactionsByDate } from "@/lib/export/date-filters";
+import { format } from "date-fns";
 
 export default function DashboardPage() {
     const { userId } = useAuth();
     const { transactions } = useTransactions();
+    const { products } = useProducts();
     const router = useRouter();
     const [dateRange, setDateRange] = useState<DateRange>("month");
 
@@ -42,6 +46,19 @@ export default function DashboardPage() {
     const filteredTransactions = useMemo(() => {
         return filterTransactionsByDate(transactions, dateRange);
     }, [transactions, dateRange]);
+
+    // Get expired products
+    const expiredProducts = useMemo(() => {
+        return products.filter(product => {
+            if (!product.expirationDate) return false;
+            const expirationDate = new Date(product.expirationDate);
+            return expirationDate < new Date();
+        }).sort((a, b) => {
+            // Sort by expiration date (most recently expired first)
+            if (!a.expirationDate || !b.expirationDate) return 0;
+            return new Date(b.expirationDate).getTime() - new Date(a.expirationDate).getTime();
+        });
+    }, [products]);
 
     // Calculate monthly data for the area chart
     const monthlyData = useMemo(() => {
@@ -304,6 +321,23 @@ export default function DashboardPage() {
                         </p>
                     </CardContent>
                 </Card>
+
+                <Card className="border-red-200">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-red-500">
+                            Expired Products
+                        </CardTitle>
+                        <AlertTriangle className="h-4 w-4 text-red-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-red-500">
+                            {expiredProducts.length}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Need attention
+                        </p>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Charts */}
@@ -354,6 +388,54 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Expired Products Table */}
+            {expiredProducts.length > 0 && (
+                <Card className="border-red-200">
+                    <CardHeader className="border-b border-red-100">
+                        <CardTitle className="text-red-500 flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5" />
+                            Expired Products
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <div className="rounded-md">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Code</TableHead>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Stock</TableHead>
+                                        <TableHead>Expiration Date</TableHead>
+                                        <TableHead>Days Expired</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {expiredProducts.map((product) => {
+                                        const expirationDate = new Date(product.expirationDate!);
+                                        const today = new Date();
+                                        const daysExpired = Math.floor((today.getTime() - expirationDate.getTime()) / (1000 * 60 * 60 * 24));
+                                        
+                                        return (
+                                            <TableRow key={product.id}>
+                                                <TableCell>{product.code}</TableCell>
+                                                <TableCell className="font-medium">{product.name}</TableCell>
+                                                <TableCell>{product.stock}</TableCell>
+                                                <TableCell className="text-red-500">
+                                                    {format(expirationDate, 'MMM dd, yyyy')}
+                                                </TableCell>
+                                                <TableCell className="text-red-500">
+                                                    {daysExpired} {daysExpired === 1 ? 'day' : 'days'}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Items Sold Table */}
             <Card>

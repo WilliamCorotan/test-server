@@ -10,9 +10,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { ProductForm } from "./ProductForm";
 import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { Product, ProductFormData } from "@/types";
 import { ProductSummary } from "./ProductSummary";
+import { format } from "date-fns";
 
 export default function ProductList() {
     const { products, loading, error, createProduct, refreshProducts } =
@@ -86,6 +87,12 @@ export default function ProductList() {
         }
     };
 
+    const isExpired = (product: Product) => {
+        if (!product.expirationDate) return false;
+        const expirationDate = new Date(product.expirationDate);
+        return expirationDate < new Date();
+    };
+
     if (loading) {
         return <div>Loading products...</div>;
     }
@@ -110,6 +117,7 @@ export default function ProductList() {
                             <TableHead>Stock</TableHead>
                             <TableHead>Buy Price</TableHead>
                             <TableHead>Sell Price</TableHead>
+                            <TableHead>Expiration Date</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -127,9 +135,23 @@ export default function ProductList() {
                                     PHP{product.sellPrice.toFixed(2)}
                                 </TableCell>
                                 <TableCell>
-                                    {product.stock <=
-                                    (product.lowStockLevel || 0) ? (
-                                        <span className="text-red-500">
+                                    {product.expirationDate ? (
+                                        <span className={isExpired(product) ? "text-red-500" : ""}>
+                                            {format(new Date(product.expirationDate), 'MMM dd, yyyy')}
+                                        </span>
+                                    ) : (
+                                        <span className="text-muted-foreground">N/A</span>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {isExpired(product) ? (
+                                        <span className="text-red-500 flex items-center gap-1">
+                                            <AlertTriangle className="h-4 w-4" />
+                                            Expired
+                                        </span>
+                                    ) : product.stock <=
+                                      (product.lowStockLevel || 0) ? (
+                                        <span className="text-amber-500">
                                             Low Stock
                                         </span>
                                     ) : (

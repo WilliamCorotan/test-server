@@ -6,7 +6,6 @@ import { addClerkId } from "./04-add-clerk-id";
 import { addDeletedColumn } from "./05-add-deleted-column";
 import { addCategoryIdToProducts } from "./06-add-category-id";
 import { addRefundTables } from "./07-add-refund-tables";
-import { addProductImageSupport } from "./08-add-product-image-support";
 
 export async function runMigrations() {
   try {
@@ -35,9 +34,6 @@ export async function runMigrations() {
 
     await addRefundTables();
     console.log("✓ Added refund tables");
-
-    await addProductImageSupport();
-    console.log("✓ Added product image support");
 
     console.log("All migrations completed successfully");
   } catch (error) {

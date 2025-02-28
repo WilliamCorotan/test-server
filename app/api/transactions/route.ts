@@ -84,7 +84,7 @@ async function isGcashPaymentMethod(
 
         return (
             paymentMethod.length > 0 &&
-            paymentMethod[0].name.toLowerCase() === "gcash"
+            paymentMethod[0]?.name?.toLowerCase() === "gcash"
         );
     } catch (error) {
         console.error("Error checking payment method:", error);

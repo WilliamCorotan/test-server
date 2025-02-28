@@ -11,6 +11,7 @@ type TransactionFromApp = {
     cash_received: string;
     email_to?: string;
     clerk_id?: string;
+    reference_number?: string; // Add reference number for GCash transactions
 };
 
 type TransactionItemFromApp = {
@@ -71,6 +72,7 @@ export async function createTransaction(
                 emailTo: data.email_to ?? null,
                 totalPrice: parseFloat(data.total_price),
                 cashReceived: parseFloat(data.cash_received),
+                referenceNumber: data.reference_number ?? null, // Include reference number
                 clerkId: userId,
             };
 

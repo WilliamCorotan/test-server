@@ -48,7 +48,6 @@ export const exportProducts = async (
     transactions: Transaction[],
     range: DateRange
 ) => {
-    console.log("aa", transactions[6].items);
     const filteredTransactions = filterTransactionsByDate(transactions, range);
     const productSales = calculateProductSales(filteredTransactions);
 

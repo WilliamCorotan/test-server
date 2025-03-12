@@ -16,7 +16,18 @@ import { ProductSummary } from "./ProductSummary";
 import { format } from "date-fns";
 import { useCategories } from "@/hooks/use-categories";
 
-export default function ProductList() {
+type Options = {
+    type: "products" | "inventory";
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    onSubmit?: (data: ProductFormData) => void;
+    initialData?: Product | null;
+    mode?: "create" | "edit";
+};
+interface ProductListProps {
+    options: Options;
+}
+export default function ProductList({ options }: ProductListProps) {
     const { products, loading, error, createProduct, refreshProducts } =
         useProducts();
     const { categories } = useCategories();
@@ -98,7 +109,7 @@ export default function ProductList() {
 
     const getCategoryName = (categoryId?: number) => {
         if (!categoryId) return "Uncategorized";
-        const category = categories.find(c => c.id === categoryId);
+        const category = categories.find((c) => c.id === categoryId);
         return category ? category.name : "Uncategorized";
     };
 
@@ -113,7 +124,11 @@ export default function ProductList() {
     return (
         <div className="space-y-4">
             <ProductSummary products={products} />
-            <div className="flex justify-end">
+            <div
+                className={`${
+                    options.type === "inventory" ? "hidden" : ""
+                } flex justify-end`}
+            >
                 <Button onClick={handleCreate}>Add Product</Button>
             </div>
 
@@ -129,7 +144,9 @@ export default function ProductList() {
                             <TableHead>Sell Price</TableHead>
                             <TableHead>Expiration Date</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead>Actions</TableHead>
+                            {options.type !== "inventory" && (
+                                <TableHead>Actions</TableHead>
+                            )}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -137,7 +154,9 @@ export default function ProductList() {
                             <TableRow key={product.id}>
                                 <TableCell>{product.code}</TableCell>
                                 <TableCell>{product.name}</TableCell>
-                                <TableCell>{getCategoryName(product.categoryId)}</TableCell>
+                                <TableCell>
+                                    {getCategoryName(product.categoryId)}
+                                </TableCell>
                                 <TableCell>{product.stock}</TableCell>
                                 <TableCell>
                                     PHP{product.buyPrice.toFixed(2)}
@@ -147,11 +166,24 @@ export default function ProductList() {
                                 </TableCell>
                                 <TableCell>
                                     {product.expirationDate ? (
-                                        <span className={isExpired(product) ? "text-red-500" : ""}>
-                                            {format(new Date(product.expirationDate), 'MMM dd, yyyy')}
+                                        <span
+                                            className={
+                                                isExpired(product)
+                                                    ? "text-red-500"
+                                                    : ""
+                                            }
+                                        >
+                                            {format(
+                                                new Date(
+                                                    product.expirationDate
+                                                ),
+                                                "MMM dd, yyyy"
+                                            )}
                                         </span>
                                     ) : (
-                                        <span className="text-muted-foreground">N/A</span>
+                                        <span className="text-muted-foreground">
+                                            N/A
+                                        </span>
                                     )}
                                 </TableCell>
                                 <TableCell>
@@ -171,26 +203,30 @@ export default function ProductList() {
                                         </span>
                                     )}
                                 </TableCell>
-                                <TableCell>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => handleEdit(product)}
-                                        >
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() =>
-                                                handleDelete(product.id)
-                                            }
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </TableCell>
+                                {options.type !== "inventory" && (
+                                    <TableCell>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() =>
+                                                    handleEdit(product)
+                                                }
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() =>
+                                                    handleDelete(product.id)
+                                                }
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </TableBody>

@@ -12,14 +12,10 @@ export type ProductSalesSummary = {
     productId: number;
     name: string;
     totalQuantity: number;
-    totalRefundedQuantity: number;
     totalBuyAmount: number;
     totalSellAmount: number;
-    totalRefundAmount: number;
     profit: number;
     profitMargin: number;
-    currentBuyPrice: number;
-    currentSellPrice: number;
 };
 
 export type Product = {

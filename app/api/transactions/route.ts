@@ -28,7 +28,6 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        console.log("request >>", body);
         const { items, ...transactionData } = body;
 
         // Validate reference number for GCash payments

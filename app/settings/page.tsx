@@ -30,7 +30,6 @@ export default function SettingsPage() {
     const { paymentMethods, refreshPaymentMethods } = usePaymentMethods();
 
     const handleEditPaymentMethod = (method: any) => {
-        console.log("ss", method);
         setEditingPaymentMethod(method);
         setOpenPaymentMethodDialog(true);
     };
@@ -57,7 +56,6 @@ export default function SettingsPage() {
         return <div>Please sign in to view settings</div>;
     }
 
-    console.log(paymentMethods);
     return (
         <div className="container mx-auto p-6 space-y-6">
             <h1 className="text-2xl font-bold">Settings</h1>

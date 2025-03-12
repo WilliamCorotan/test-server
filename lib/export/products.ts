@@ -31,6 +31,8 @@ export const calculateProductSales = (transactions: Transaction[]) => {
                 productSales.set(item.productId, {
                     productId: item.productId,
                     name: item.productName,
+                    buyPrice: item.productBuyPrice,
+                    sellPrice: item.productSellPrice,
                     totalQuantity: item.quantity,
                     totalBuyAmount,
                     totalSellAmount,
@@ -54,6 +56,8 @@ export const exportProducts = async (
     const data = productSales.map((product) => ({
         "Product ID": product.productId,
         "Product Name": product.name,
+        "Product Buy Price": product.buyPrice,
+        "Product Sell Price": product.sellPrice,
         "Total Quantity Sold": product.totalQuantity,
         "Total Buy Amount": `PHP ${product.totalBuyAmount.toFixed(2)}`,
         "Total Sell Amount": `PHP ${product.totalSellAmount.toFixed(2)}`,

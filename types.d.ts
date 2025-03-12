@@ -11,6 +11,8 @@ export type ExportType = "transactions" | "products";
 export type ProductSalesSummary = {
     productId: number;
     name: string;
+    buyPrice: number;
+    sellPrice: number;
     totalQuantity: number;
     totalBuyAmount: number;
     totalSellAmount: number;
@@ -73,6 +75,8 @@ export type Transaction = {
     clerkId?: string;
     items: string;
     paymentMethodName?: string;
+    totalRefund: number;
+    refundReasons?: string;
 };
 
 export type ProductFormData = {

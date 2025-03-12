@@ -1,5 +1,11 @@
 import { db } from "@/lib/db";
-import { transactions, orders, payments, products } from "@/lib/db/schema";
+import {
+    transactions,
+    orders,
+    payments,
+    products,
+    refunds,
+} from "@/lib/db/schema";
 import { eq, sql, getTableColumns, and } from "drizzle-orm";
 
 type TransactionFromApp = {
@@ -40,6 +46,17 @@ export async function getTransactions(userId: string) {
                 WHERE ${orders.transactionId} = ${transactions.id}
             )`.as("items"),
             paymentMethodName: payments.name,
+            totalRefund: sql`(
+                SELECT COALESCE(SUM(${refunds.totalAmount}), 0)
+                FROM ${refunds}
+                WHERE ${refunds.transactionId} = ${transactions.id}
+            )`.as("totalRefund"),
+            refundReasons: sql`(
+                SELECT GROUP_CONCAT(${refunds.reason}, '; ')
+                FROM ${refunds}
+                WHERE ${refunds.transactionId} = ${transactions.id}
+                AND ${refunds.reason} IS NOT NULL
+            )`.as("refundReasons"),
         })
         .from(transactions)
         .leftJoin(payments, eq(transactions.paymentMethodId, payments.id))

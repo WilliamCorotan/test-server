@@ -17,7 +17,7 @@ type TransactionFromApp = {
     cash_received: string;
     email_to?: string;
     clerk_id?: string;
-    reference_number?: string; // Add reference number for GCash transactions
+    reference_number?: string;
 };
 
 type TransactionItemFromApp = {
@@ -57,6 +57,12 @@ export async function getTransactions(userId: string) {
                 WHERE ${refunds.transactionId} = ${transactions.id}
                 AND ${refunds.reason} IS NOT NULL
             )`.as("refundReasons"),
+            totalCost: sql`(
+                SELECT COALESCE(SUM(${products.buyPrice} * ${orders.quantity}), 0)
+                FROM ${orders}
+                JOIN ${products} ON ${orders.productId} = ${products.id}
+                WHERE ${orders.transactionId} = ${transactions.id}
+            )`.as("totalCost"),
         })
         .from(transactions)
         .leftJoin(payments, eq(transactions.paymentMethodId, payments.id))
@@ -89,7 +95,7 @@ export async function createTransaction(
                 emailTo: data.email_to ?? null,
                 totalPrice: parseFloat(data.total_price),
                 cashReceived: parseFloat(data.cash_received),
-                referenceNumber: data.reference_number ?? null, // Include reference number
+                referenceNumber: data.reference_number ?? null,
                 clerkId: userId,
             };
 

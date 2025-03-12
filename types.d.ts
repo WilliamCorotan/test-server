@@ -77,6 +77,7 @@ export type Transaction = {
     paymentMethodName?: string;
     totalRefund: number;
     refundReasons?: string;
+    totalCost?: number;
 };
 
 export type ProductFormData = {

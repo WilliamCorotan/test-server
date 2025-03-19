@@ -66,7 +66,7 @@ export function ProductForm({
         lowStockLevel: initialData.lowStockLevel || 0,
         expirationDate: initialData.expirationDate || "",
         categoryId: initialData.categoryId || 0,
-        image: initialData.image || "",
+        imageUrl: initialData.imageUrl || "",
       });
     } else {
       setFormData(defaultFormData);
@@ -97,7 +97,7 @@ export function ProductForm({
       }
 
       const blob = await response.json();
-      setFormData((prev) => ({ ...prev, image: blob.url }));
+      setFormData((prev) => ({ ...prev, imageUrl: blob.url }));
     } catch (error) {
       console.error("Error uploading image:", error);
     } finally {
@@ -106,7 +106,7 @@ export function ProductForm({
   };
 
   const removeImage = () => {
-    setFormData((prev) => ({ ...prev, image: "" }));
+    setFormData((prev) => ({ ...prev, imageUrl: "" }));
   };
 
   return (
@@ -122,10 +122,10 @@ export function ProductForm({
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {formData.image && (
+            {formData.imageUrl && (
               <div className="relative w-full aspect-video">
                 <Image
-                  src={formData.image}
+                  src={formData.imageUrl}
                   alt="Product image"
                   fill
                   className="object-contain rounded-md"

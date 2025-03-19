@@ -9,6 +9,7 @@ import { addRefundTables } from "./07-add-refund-tables";
 import { addReferenceNumberToTransactions } from "./08-add-reference-number";
 import { addRestockTable } from "./09-add-restock-table";
 import { removeImageColumn } from "./10-remove-image-column";
+import { restoreForeignKeys } from "./11-restore-foreign-keys";
 
 export async function runMigrations() {
   try {
@@ -46,6 +47,9 @@ export async function runMigrations() {
 
     await removeImageColumn();
     console.log("✓ Removed image column from products table");
+
+    await restoreForeignKeys();
+    console.log("✓ Restored foreign key constraints");
 
     console.log("All migrations completed successfully");
   } catch (error) {

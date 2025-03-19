@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 
 export async function removeImageColumn() {
   try {
+    // Disable foreign key constraints
+    await db.run(sql`PRAGMA foreign_keys=off`);
+
     // First drop the products_new table if it exists
     await db.run(sql`DROP TABLE IF EXISTS products_new`);
 
@@ -73,34 +76,18 @@ export async function removeImageColumn() {
         ON products(category_id)
       `);
 
-      // Add foreign key constraints
-      await db.run(sql`
-        CREATE TRIGGER IF NOT EXISTS fk_products_unit_measurements
-        BEFORE INSERT ON products
-        FOR EACH ROW
-        WHEN NEW.unit_measurements_id IS NOT NULL
-        BEGIN
-          SELECT RAISE(ROLLBACK, 'Foreign key violation: unit_measurements_id not found')
-          WHERE NOT EXISTS (SELECT 1 FROM unit_measurements WHERE id = NEW.unit_measurements_id);
-        END;
-      `);
-
-      await db.run(sql`
-        CREATE TRIGGER IF NOT EXISTS fk_products_category
-        BEFORE INSERT ON products
-        FOR EACH ROW
-        WHEN NEW.category_id IS NOT NULL
-        BEGIN
-          SELECT RAISE(ROLLBACK, 'Foreign key violation: category_id not found')
-          WHERE NOT EXISTS (SELECT 1 FROM product_categories WHERE id = NEW.category_id);
-        END;
-      `);
-
-      console.log(`✓ Removed image column from products table`);
+      console.log(
+        `✓ Removed image column and foreign key constraints from products table`
+      );
     } else {
       console.log(`✗ image column does not exist in products table`);
     }
+
+    // Re-enable foreign key constraints
+    await db.run(sql`PRAGMA foreign_keys=on`);
   } catch (error) {
+    // Make sure to re-enable foreign keys even if there's an error
+    await db.run(sql`PRAGMA foreign_keys=on`);
     console.error("Failed to remove image column:", error);
     throw error;
   }

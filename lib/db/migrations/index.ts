@@ -8,6 +8,7 @@ import { addCategoryIdToProducts } from "./06-add-category-id";
 import { addRefundTables } from "./07-add-refund-tables";
 import { addReferenceNumberToTransactions } from "./08-add-reference-number";
 import { addRestockTable } from "./09-add-restock-table";
+import { removeImageColumn } from "./10-remove-image-column";
 
 export async function runMigrations() {
   try {
@@ -42,6 +43,9 @@ export async function runMigrations() {
 
     await addRestockTable();
     console.log("✓ Added restock_history table");
+
+    await removeImageColumn();
+    console.log("✓ Removed image column from products table");
 
     console.log("All migrations completed successfully");
   } catch (error) {

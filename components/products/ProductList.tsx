@@ -17,11 +17,13 @@ import {
   AlertTriangle,
   PackagePlus,
   FileDown,
+  Package,
 } from "lucide-react";
 import { Product, ProductFormData } from "@/types";
 import { ProductSummary } from "./ProductSummary";
 import { format } from "date-fns";
 import { useCategories } from "@/hooks/use-categories";
+import Image from "next/image";
 
 type Options = {
   type: "products" | "inventory";
@@ -201,6 +203,7 @@ export default function ProductList({ options }: ProductListProps) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Image</TableHead>
               <TableHead>Code</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Category</TableHead>
@@ -215,6 +218,22 @@ export default function ProductList({ options }: ProductListProps) {
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
+                <TableCell>
+                  {product.image ? (
+                    <div className="relative w-12 h-12">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-contain rounded-md"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 bg-muted rounded-md flex items-center justify-center">
+                      <Package className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell>{product.code}</TableCell>
                 <TableCell>{product.name}</TableCell>
                 <TableCell>{getCategoryName(product.categoryId)}</TableCell>

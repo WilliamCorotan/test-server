@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
+import { X } from "lucide-react";
 
 interface ProductFormProps {
   open: boolean;
@@ -38,6 +40,7 @@ const defaultFormData: ProductFormData = {
   lowStockLevel: 0,
   expirationDate: "",
   categoryId: 0,
+  image: "",
 };
 
 export function ProductForm({
@@ -48,6 +51,7 @@ export function ProductForm({
   mode,
 }: ProductFormProps) {
   const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
+  const [uploading, setUploading] = useState(false);
   const { categories } = useCategories();
 
   useEffect(() => {
@@ -62,6 +66,7 @@ export function ProductForm({
         lowStockLevel: initialData.lowStockLevel || 0,
         expirationDate: initialData.expirationDate || "",
         categoryId: initialData.categoryId || 0,
+        image: initialData.image || "",
       });
     } else {
       setFormData(defaultFormData);
@@ -71,6 +76,37 @@ export function ProductForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const blob = await response.json();
+      setFormData((prev) => ({ ...prev, image: blob.url }));
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, image: "" }));
   };
 
   return (
@@ -86,6 +122,40 @@ export function ProductForm({
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
+            {formData.image && (
+              <div className="relative w-full aspect-video">
+                <Image
+                  src={formData.image}
+                  alt="Product image"
+                  fill
+                  className="object-contain rounded-md"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2"
+                  onClick={removeImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="image" className="text-right">
+                Image
+              </Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="col-span-3"
+              />
+            </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Name
@@ -240,7 +310,6 @@ export function ProductForm({
                 className="col-span-3"
               />
             </div>
-
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="expirationDate" className="text-right">
                 Expiration Date
@@ -260,7 +329,7 @@ export function ProductForm({
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">
+            <Button type="submit" disabled={uploading}>
               {mode === "create" ? "Create" : "Save"}
             </Button>
           </DialogFooter>

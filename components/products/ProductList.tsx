@@ -86,7 +86,7 @@ export default function ProductList({ options }: ProductListProps) {
       const processedData = {
         ...data,
         description: data.description || undefined,
-        image: data.image || undefined,
+        imageUrl: data.imageUrl || undefined,
         expirationDate: data.expirationDate || undefined,
         unitMeasurementsId: data.unitMeasurementsId ?? 0,
         categoryId: data.categoryId,
@@ -219,10 +219,10 @@ export default function ProductList({ options }: ProductListProps) {
             {products.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>
-                  {product.image ? (
+                  {product.imageUrl ? (
                     <div className="relative w-12 h-12">
                       <Image
-                        src={product.image}
+                        src={product.imageUrl}
                         alt={product.name}
                         fill
                         className="object-contain rounded-md"

@@ -32,9 +32,7 @@ export async function removeImageColumn() {
           unit_measurements_id INTEGER,
           category_id INTEGER,
           clerk_id TEXT NOT NULL,
-          deleted TEXT,
-          FOREIGN KEY (unit_measurements_id) REFERENCES unit_measurements(id),
-          FOREIGN KEY (category_id) REFERENCES product_categories(id)
+          deleted TEXT
         )
       `);
 
@@ -64,7 +62,7 @@ export async function removeImageColumn() {
       // Rename new table to products
       await db.run(sql`ALTER TABLE products_new RENAME TO products`);
 
-      // Create indexes for foreign keys
+      // Add foreign key constraints after table creation
       await db.run(sql`
         CREATE INDEX IF NOT EXISTS idx_products_unit_measurements 
         ON products(unit_measurements_id)
@@ -73,6 +71,29 @@ export async function removeImageColumn() {
       await db.run(sql`
         CREATE INDEX IF NOT EXISTS idx_products_category 
         ON products(category_id)
+      `);
+
+      // Add foreign key constraints
+      await db.run(sql`
+        CREATE TRIGGER IF NOT EXISTS fk_products_unit_measurements
+        BEFORE INSERT ON products
+        FOR EACH ROW
+        WHEN NEW.unit_measurements_id IS NOT NULL
+        BEGIN
+          SELECT RAISE(ROLLBACK, 'Foreign key violation: unit_measurements_id not found')
+          WHERE NOT EXISTS (SELECT 1 FROM unit_measurements WHERE id = NEW.unit_measurements_id);
+        END;
+      `);
+
+      await db.run(sql`
+        CREATE TRIGGER IF NOT EXISTS fk_products_category
+        BEFORE INSERT ON products
+        FOR EACH ROW
+        WHEN NEW.category_id IS NOT NULL
+        BEGIN
+          SELECT RAISE(ROLLBACK, 'Foreign key violation: category_id not found')
+          WHERE NOT EXISTS (SELECT 1 FROM product_categories WHERE id = NEW.category_id);
+        END;
       `);
 
       console.log(`✓ Removed image column from products table`);

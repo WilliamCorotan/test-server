@@ -3,7 +3,10 @@ import { db } from "@/lib/db";
 
 export async function removeImageColumn() {
   try {
-    // Check if the column exists
+    // First drop the products_new table if it exists
+    await db.run(sql`DROP TABLE IF EXISTS products_new`);
+
+    // Check if the image column exists in products table
     const columnExistsResult = await db.get<{ count: number }>(sql`
       SELECT COUNT(*) as count
       FROM pragma_table_info('products')
@@ -26,39 +29,51 @@ export async function removeImageColumn() {
           stock INTEGER NOT NULL,
           low_stock_level INTEGER,
           expiration_date TEXT,
-          unit_measurements_id INTEGER REFERENCES unit_measurements(id),
-          category_id INTEGER REFERENCES product_categories(id),
+          unit_measurements_id INTEGER,
+          category_id INTEGER,
           clerk_id TEXT NOT NULL,
-          deleted TEXT
+          deleted TEXT,
+          FOREIGN KEY (unit_measurements_id) REFERENCES unit_measurements(id),
+          FOREIGN KEY (category_id) REFERENCES product_categories(id)
         )
       `);
 
       // Copy data from old table to new table
       await db.run(sql`
-        INSERT INTO products_new
+        INSERT INTO products_new (
+          id, name, code, description, image_url, buy_price, sell_price,
+          stock, low_stock_level, expiration_date, unit_measurements_id,
+          category_id, clerk_id, deleted
+        )
         SELECT 
-          id,
-          name,
-          code,
-          description,
-          image_url,
-          buy_price,
-          sell_price,
-          stock,
-          low_stock_level,
-          expiration_date,
-          unit_measurements_id,
-          category_id,
-          clerk_id,
-          deleted
+          id, name, code, description, 
+          CASE 
+            WHEN image_url IS NOT NULL THEN image_url 
+            WHEN image IS NOT NULL THEN image 
+            ELSE NULL 
+          END as image_url,
+          buy_price, sell_price, stock, low_stock_level,
+          expiration_date, unit_measurements_id, category_id,
+          clerk_id, deleted
         FROM products
       `);
 
       // Drop old table
-      await db.run(sql`DROP TABLE products`);
+      await db.run(sql`DROP TABLE IF EXISTS products`);
 
       // Rename new table to products
       await db.run(sql`ALTER TABLE products_new RENAME TO products`);
+
+      // Create indexes for foreign keys
+      await db.run(sql`
+        CREATE INDEX IF NOT EXISTS idx_products_unit_measurements 
+        ON products(unit_measurements_id)
+      `);
+
+      await db.run(sql`
+        CREATE INDEX IF NOT EXISTS idx_products_category 
+        ON products(category_id)
+      `);
 
       console.log(`✓ Removed image column from products table`);
     } else {

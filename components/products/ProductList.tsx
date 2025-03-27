@@ -18,12 +18,21 @@ import {
   PackagePlus,
   FileDown,
   Package,
+  Search,
 } from "lucide-react";
 import { Product, ProductFormData } from "@/types";
 import { ProductSummary } from "./ProductSummary";
 import { format } from "date-fns";
 import { useCategories } from "@/hooks/use-categories";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Options = {
   type: "products" | "inventory";
@@ -49,6 +58,8 @@ export default function ProductList({ options }: ProductListProps) {
     null
   );
   const [mode, setMode] = useState<"create" | "edit">("create");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const handleCreate = () => {
     setMode("create");
@@ -172,6 +183,21 @@ export default function ProductList({ options }: ProductListProps) {
     return category ? category.name : "Uncategorized";
   };
 
+  // Filter products based on search term and category
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.code.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "all" ||
+      (selectedCategory === "uncategorized" && !product.categoryId) ||
+      product.categoryId?.toString() === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
   if (loading) {
     return <div>Loading products...</div>;
   }
@@ -183,20 +209,49 @@ export default function ProductList({ options }: ProductListProps) {
   return (
     <div className="space-y-4">
       <ProductSummary products={products} />
-      <div
-        className={`${
-          options.type === "inventory" ? "hidden" : ""
-        } flex justify-between items-center`}
-      >
-        <Button
-          variant="outline"
-          onClick={handleExportRestock}
-          className="flex items-center gap-2"
+
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-1 gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="uncategorized">Uncategorized</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.id.toString()}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div
+          className={`${
+            options.type === "inventory" ? "hidden" : ""
+          } flex gap-4 items-center`}
         >
-          <FileDown className="h-4 w-4" />
-          Export Restock History
-        </Button>
-        <Button onClick={handleCreate}>Add Product</Button>
+          <Button
+            variant="outline"
+            onClick={handleExportRestock}
+            className="flex items-center gap-2"
+          >
+            <FileDown className="h-4 w-4" />
+            Export Restock History
+          </Button>
+          <Button onClick={handleCreate}>Add Product</Button>
+        </div>
       </div>
 
       <div className="rounded-md border">
@@ -216,78 +271,91 @@ export default function ProductList({ options }: ProductListProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  {product.imageUrl ? (
-                    <div className="relative w-12 h-12">
-                      <Image
-                        src={product.imageUrl}
-                        alt={product.name}
-                        fill
-                        className="object-contain rounded-md"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-12 h-12 bg-muted rounded-md flex items-center justify-center">
-                      <Package className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>{product.code}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{getCategoryName(product.categoryId)}</TableCell>
-                <TableCell>{product.stock}</TableCell>
-                <TableCell>PHP{product.buyPrice.toFixed(2)}</TableCell>
-                <TableCell>PHP{product.sellPrice.toFixed(2)}</TableCell>
-                <TableCell>
-                  {product.expirationDate ? (
-                    <span className={isExpired(product) ? "text-red-500" : ""}>
-                      {format(new Date(product.expirationDate), "MMM dd, yyyy")}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">N/A</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {isExpired(product) ? (
-                    <span className="text-red-500 flex items-center gap-1">
-                      <AlertTriangle className="h-4 w-4" />
-                      Expired
-                    </span>
-                  ) : product.stock <= (product.lowStockLevel || 0) ? (
-                    <span className="text-amber-500">Low Stock</span>
-                  ) : (
-                    <span className="text-green-500">In Stock</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRestock(product)}
-                    >
-                      <PackagePlus className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(product)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(product.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+            {filteredProducts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={10} className="text-center py-4">
+                  No products found
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    {product.imageUrl ? (
+                      <div className="relative w-12 h-12">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          fill
+                          className="object-contain rounded-md"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 bg-muted rounded-md flex items-center justify-center">
+                        <Package className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>{product.code}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{getCategoryName(product.categoryId)}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>PHP{product.buyPrice.toFixed(2)}</TableCell>
+                  <TableCell>PHP{product.sellPrice.toFixed(2)}</TableCell>
+                  <TableCell>
+                    {product.expirationDate ? (
+                      <span
+                        className={isExpired(product) ? "text-red-500" : ""}
+                      >
+                        {format(
+                          new Date(product.expirationDate),
+                          "MMM dd, yyyy"
+                        )}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">N/A</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {isExpired(product) ? (
+                      <span className="text-red-500 flex items-center gap-1">
+                        <AlertTriangle className="h-4 w-4" />
+                        Expired
+                      </span>
+                    ) : product.stock <= (product.lowStockLevel || 0) ? (
+                      <span className="text-amber-500">Low Stock</span>
+                    ) : (
+                      <span className="text-green-500">In Stock</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRestock(product)}
+                      >
+                        <PackagePlus className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(product)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { RefundForm } from "@/components/refunds/RefundForm";
 import { RefundFormData, Transaction, TransactionItem } from "@/types";
-import { format } from "date-fns";
 import { ChevronDown, ChevronRight, RefreshCcw } from "lucide-react";
 import { useTransactions } from "@/hooks/use-transactions";
+import { formatDateToPH } from "@/lib/utils/date";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -110,10 +110,7 @@ export default function TransactionList({
                       {transaction.id}
                     </TableCell>
                     <TableCell onClick={() => toggleRow(transaction.id)}>
-                      {format(
-                        new Date(transaction.dateOfTransaction),
-                        "MMM dd, yyyy HH:mm"
-                      )}
+                      {formatDateToPH(transaction.dateOfTransaction)}
                     </TableCell>
                     <TableCell onClick={() => toggleRow(transaction.id)}>
                       PHP {transaction.totalPrice.toFixed(2)}

@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { Product, ProductFormData } from "@/types";
 import { ProductSummary } from "./ProductSummary";
-import { format } from "date-fns";
 import { useCategories } from "@/hooks/use-categories";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -33,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatDateToPH } from "@/lib/utils/date";
 
 type Options = {
   type: "products" | "inventory";
@@ -307,10 +307,7 @@ export default function ProductList({ options }: ProductListProps) {
                       <span
                         className={isExpired(product) ? "text-red-500" : ""}
                       >
-                        {format(
-                          new Date(product.expirationDate),
-                          "MMM dd, yyyy"
-                        )}
+                        {formatDateToPH(product.expirationDate, "MMM dd, yyyy")}
                       </span>
                     ) : (
                       <span className="text-muted-foreground">N/A</span>

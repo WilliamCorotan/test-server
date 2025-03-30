@@ -7,28 +7,33 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { TableLoading } from "@/components/ui/table-loading";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { RefundForm } from "@/components/refunds/RefundForm";
 import { RefundFormData, Transaction, TransactionItem } from "@/types";
 import { ChevronDown, ChevronRight, RefreshCcw } from "lucide-react";
-import { useTransactions } from "@/hooks/use-transactions";
 import { formatDateToPH } from "@/lib/utils/date";
 
 interface TransactionListProps {
     transactions: Transaction[];
+    loading?: boolean;
+    onTransactionUpdated: () => void;
 }
 
 export default function TransactionList({
     transactions,
+    loading = false,
+    onTransactionUpdated,
 }: TransactionListProps) {
-    const { refreshTransactions } = useTransactions();
     const { createRefund } = useRefunds();
     const [openRefundDialog, setOpenRefundDialog] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState<
         number | null
     >(null);
     const [expandedRows, setExpandedRows] = useState<number[]>([]);
+    const [isActionLoading, setIsActionLoading] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const handleRefund = (transactionId: number) => {
         setSelectedTransactionId(transactionId);
@@ -37,12 +42,24 @@ export default function TransactionList({
 
     const handleRefundSubmit = async (data: RefundFormData) => {
         try {
+            setIsActionLoading(true);
             await createRefund(data);
             setOpenRefundDialog(false);
-            refreshTransactions();
+            await onTransactionUpdated();
         } catch (error) {
             console.error("Error processing refund:", error);
             alert("Failed to process refund. Please try again.");
+        } finally {
+            setIsActionLoading(false);
+        }
+    };
+
+    const handleRefresh = async () => {
+        try {
+            setIsRefreshing(true);
+            await onTransactionUpdated();
+        } finally {
+            setIsRefreshing(false);
         }
     };
 
@@ -70,10 +87,15 @@ export default function TransactionList({
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={refreshTransactions}
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
                     className="flex items-center gap-2"
                 >
-                    <RefreshCcw className="h-4 w-4" />
+                    <RefreshCcw
+                        className={`h-4 w-4 ${
+                            isRefreshing ? "animate-spin" : ""
+                        }`}
+                    />
                     Refresh
                 </Button>
             </div>
@@ -94,7 +116,9 @@ export default function TransactionList({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {transactions.length > 0 ? (
+                        {loading || isRefreshing ? (
+                            <TableLoading columns={7} />
+                        ) : transactions.length > 0 ? (
                             transactions.map((transaction) => (
                                 <>
                                     <TableRow
@@ -173,7 +197,8 @@ export default function TransactionList({
                                                 }
                                                 disabled={
                                                     transaction.status ===
-                                                    "refunded"
+                                                        "refunded" ||
+                                                    isActionLoading
                                                 }
                                             >
                                                 Refund
@@ -181,9 +206,7 @@ export default function TransactionList({
                                         </TableCell>
                                     </TableRow>
                                     {expandedRows.includes(transaction.id) && (
-                                        <TableRow
-                                            key={`expanded-row-${transaction.id}`}
-                                        >
+                                        <TableRow>
                                             <TableCell
                                                 colSpan={7}
                                                 className="bg-muted/30 p-4"
@@ -289,6 +312,7 @@ export default function TransactionList({
                     onOpenChange={setOpenRefundDialog}
                     onSubmit={handleRefundSubmit}
                     transactionId={selectedTransactionId}
+                    isLoading={isActionLoading}
                 />
             )}
         </div>

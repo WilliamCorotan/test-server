@@ -23,7 +23,9 @@ export default function TransactionsPage() {
     const { userId } = useAuth();
     const [dateRange, setDateRange] = useState<DateRange>("month");
     const [exportType, setExportType] = useState<ExportType>("transactions");
-    const { transactions } = useTransactions();
+    const { transactions, loading, error, refreshTransactions } =
+        useTransactions();
+    const [isExporting, setIsExporting] = useState(false);
 
     // Filter transactions based on selected date range
     const filteredTransactions = useMemo(() => {
@@ -50,17 +52,28 @@ export default function TransactionsPage() {
         }
     }, [dateRange]);
 
+    const handleExport = async () => {
+        try {
+            setIsExporting(true);
+            if (exportType === "transactions") {
+                await exportTransactions(filteredTransactions, dateRange);
+            } else {
+                await exportProducts(filteredTransactions, dateRange);
+            }
+        } catch (error) {
+            console.error("Error exporting data:", error);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     if (!userId) {
         return <div>Please sign in to view transactions</div>;
     }
 
-    const handleExport = () => {
-        if (exportType === "transactions") {
-            exportTransactions(filteredTransactions, dateRange);
-        } else {
-            exportProducts(filteredTransactions, dateRange);
-        }
-    };
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <div className="container mx-auto p-6 space-y-6">
@@ -105,7 +118,9 @@ export default function TransactionsPage() {
                             </SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button onClick={handleExport}>Export to Excel</Button>
+                    <Button onClick={handleExport} disabled={isExporting}>
+                        Export to Excel
+                    </Button>
                 </div>
             </div>
 
@@ -153,7 +168,11 @@ export default function TransactionsPage() {
                 </div>
             </div>
 
-            <TransactionList transactions={filteredTransactions} />
+            <TransactionList
+                transactions={filteredTransactions}
+                loading={loading}
+                onTransactionUpdated={refreshTransactions}
+            />
         </div>
     );
 }

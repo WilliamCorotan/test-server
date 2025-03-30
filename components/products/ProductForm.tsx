@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 interface ProductFormProps {
     open: boolean;
@@ -28,6 +29,7 @@ interface ProductFormProps {
     onSubmit: (data: ProductFormData) => void;
     initialData?: Product | null;
     mode: "create" | "edit";
+    isLoading?: boolean;
 }
 
 const defaultFormData: ProductFormData = {
@@ -49,6 +51,7 @@ export function ProductForm({
     onSubmit,
     initialData,
     mode,
+    isLoading = false,
 }: ProductFormProps) {
     const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
     const [uploading, setUploading] = useState(false);
@@ -138,6 +141,7 @@ export function ProductForm({
                                     size="icon"
                                     className="absolute top-2 right-2"
                                     onClick={removeImage}
+                                    disabled={isLoading}
                                 >
                                     <X className="h-4 w-4" />
                                 </Button>
@@ -153,7 +157,7 @@ export function ProductForm({
                                 type="file"
                                 accept="image/*"
                                 onChange={handleImageUpload}
-                                disabled={uploading}
+                                disabled={uploading || isLoading}
                                 className="col-span-3"
                             />
                         </div>
@@ -173,6 +177,7 @@ export function ProductForm({
                                 }
                                 className="col-span-3"
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -190,6 +195,7 @@ export function ProductForm({
                                 }
                                 className="col-span-3"
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -206,6 +212,7 @@ export function ProductForm({
                                         })
                                     }
                                     required
+                                    disabled={isLoading}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a category" />
@@ -237,6 +244,7 @@ export function ProductForm({
                                     })
                                 }
                                 className="col-span-3"
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -256,6 +264,7 @@ export function ProductForm({
                                 }
                                 className="col-span-3"
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -275,6 +284,7 @@ export function ProductForm({
                                 }
                                 className="col-span-3"
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -293,6 +303,7 @@ export function ProductForm({
                                 }
                                 className="col-span-3"
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -313,6 +324,7 @@ export function ProductForm({
                                     })
                                 }
                                 className="col-span-3"
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -333,11 +345,15 @@ export function ProductForm({
                                     })
                                 }
                                 className="col-span-3"
+                                disabled={isLoading}
                             />
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" disabled={uploading}>
+                        <Button type="submit" disabled={isLoading || uploading}>
+                            {isLoading ? (
+                                <Spinner className="mr-2" size="sm" />
+                            ) : null}
                             {mode === "create" ? "Create" : "Save"}
                         </Button>
                     </DialogFooter>

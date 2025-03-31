@@ -112,7 +112,7 @@ export default function ProductList({ options }: ProductListProps) {
                 description: data.description || undefined,
                 imageUrl: data.imageUrl || undefined,
                 expirationDate: data.expirationDate || undefined,
-                unitMeasurementsId: data.unitMeasurementsId ?? 0,
+                unitMeasurementsId: data.unitMeasurementsId || undefined,
                 categoryId: data.categoryId,
                 clerkId: data.clerkId || "",
                 buyPrice: parseFloat(data.buyPrice.toString()),

@@ -44,8 +44,8 @@ export default function SettingsPage() {
         refreshPaymentMethods,
     } = usePaymentMethods();
     const {
-        unitMeasurements,
-        loading: loadingUnits,
+        // unitMeasurements,
+        // loading: loadingUnits,
         error: unitError,
         refreshUnitMeasurements,
     } = useUnitMeasurements();
@@ -56,18 +56,18 @@ export default function SettingsPage() {
         setOpenPaymentMethodDialog(true);
     };
 
-    const handleEditUnitMeasurement = (unit: UnitMeasurement) => {
-        setEditingUnitMeasurement(unit);
-        setOpenUnitMeasurementDialog(true);
-    };
+    // const handleEditUnitMeasurement = (unit: UnitMeasurement) => {
+    //     setEditingUnitMeasurement(unit);
+    //     setOpenUnitMeasurementDialog(true);
+    // };
 
     const handleViewPaymentMethod = (method: any) => {
         setViewingPaymentMethod(method);
     };
 
-    const handleViewUnitMeasurement = (unit: UnitMeasurement) => {
-        setViewingUnitMeasurement(unit);
-    };
+    // const handleViewUnitMeasurement = (unit: UnitMeasurement) => {
+    //     setViewingUnitMeasurement(unit);
+    // };
 
     const handleDeletePaymentMethod = async (id: number) => {
         if (confirm("Are you sure you want to delete this payment method?")) {
@@ -90,26 +90,26 @@ export default function SettingsPage() {
         }
     };
 
-    const handleDeleteUnitMeasurement = async (id: number) => {
-        if (confirm("Are you sure you want to delete this unit measurement?")) {
-            try {
-                setIsActionLoading(true);
-                const response = await fetch(
-                    `/api/settings/unit-measurements/${id}`,
-                    {
-                        method: "DELETE",
-                    }
-                );
-                if (!response.ok)
-                    throw new Error("Failed to delete unit measurement");
-                refreshUnitMeasurements();
-            } catch (error) {
-                console.error("Error deleting unit measurement:", error);
-            } finally {
-                setIsActionLoading(false);
-            }
-        }
-    };
+    // const handleDeleteUnitMeasurement = async (id: number) => {
+    //     if (confirm("Are you sure you want to delete this unit measurement?")) {
+    //         try {
+    //             setIsActionLoading(true);
+    //             const response = await fetch(
+    //                 `/api/settings/unit-measurements/${id}`,
+    //                 {
+    //                     method: "DELETE",
+    //                 }
+    //             );
+    //             if (!response.ok)
+    //                 throw new Error("Failed to delete unit measurement");
+    //             refreshUnitMeasurements();
+    //         } catch (error) {
+    //             console.error("Error deleting unit measurement:", error);
+    //         } finally {
+    //             setIsActionLoading(false);
+    //         }
+    //     }
+    // };
 
     if (!userId) {
         return <div>Please sign in to view settings</div>;

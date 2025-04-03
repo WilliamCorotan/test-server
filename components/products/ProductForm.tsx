@@ -42,6 +42,7 @@ const defaultFormData: ProductFormData = {
     lowStockLevel: 0,
     expirationDate: "",
     categoryId: 0,
+    unitMeasurement: "",
     image: "",
 };
 
@@ -69,6 +70,7 @@ export function ProductForm({
                 lowStockLevel: initialData.lowStockLevel || 0,
                 expirationDate: initialData.expirationDate || "",
                 categoryId: initialData.categoryId || 0,
+                unitMeasurement: initialData.unitMeasurement || "",
                 imageUrl: initialData.imageUrl || "",
             });
         } else {
@@ -244,6 +246,27 @@ export function ProductForm({
                                     })
                                 }
                                 className="col-span-3"
+                                disabled={isLoading}
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label
+                                htmlFor="unitMeasurement"
+                                className="text-right"
+                            >
+                                Unit
+                            </Label>
+                            <Input
+                                id="unitMeasurement"
+                                value={formData.unitMeasurement}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        unitMeasurement: e.target.value,
+                                    })
+                                }
+                                className="col-span-3"
+                                placeholder="e.g., kg, pcs, box"
                                 disabled={isLoading}
                             />
                         </div>

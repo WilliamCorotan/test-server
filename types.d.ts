@@ -33,6 +33,7 @@ export type Product = {
     lowStockLevel?: number;
     expirationDate?: string;
     unitMeasurementsId?: number;
+    unitMeasurement?: string;
     categoryId?: number;
     clerkId: string;
 };
@@ -94,6 +95,7 @@ export type ProductFormData = {
     lowStockLevel?: number;
     expirationDate?: string;
     unitMeasurementsId?: number;
+    unitMeasurement?: string;
     categoryId?: number;
     clerkId?: string;
 };

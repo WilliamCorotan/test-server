@@ -186,6 +186,7 @@ export default function ProductList({ options }: ProductListProps) {
             if (!response.ok)
                 throw new Error("Failed to export restock history");
 
+            window.location.href = "/api/products/restock/export";
             const data = await response.json();
             if (data.success) {
                 console.log("Restock history exported successfully");

@@ -61,6 +61,9 @@ export async function exportRestockHistory(userId: string) {
         );
         const uniqueProducts = new Set(history.map((r) => r.productId)).size;
 
+        console.log("Total Quantity:", totalQuantity);
+        console.log("Unique Products:", uniqueProducts);
+        console.log("Total Records:", history.length);
         XLSX.utils.sheet_add_aoa(
             ws,
             [

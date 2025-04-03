@@ -84,10 +84,16 @@ export async function exportRestockHistory(userId: string) {
             "yyyy-MM-dd"
         )}.xlsx`;
 
-        // Write file
-        XLSX.writeFile(wb, fileName);
+        // Instead of writing to file, return buffer and filename
+        const buffer = XLSX.write(wb, { bookType: "xlsx", type: "buffer" });
 
-        return { success: true };
+        return {
+            success: true,
+            buffer,
+            fileName,
+            contentType:
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        };
     } catch (error) {
         console.error("Error exporting restock history:", error);
         throw error;

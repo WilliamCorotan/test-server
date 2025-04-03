@@ -125,15 +125,15 @@ export default function SettingsPage() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList>
-                    <TabsTrigger value="unit-measurements">
+                    {/* <TabsTrigger value="unit-measurements">
                         Unit Measurements
-                    </TabsTrigger>
+                    </TabsTrigger> */}
                     <TabsTrigger value="payment-methods">
                         Payment Methods
                     </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="unit-measurements" className="space-y-4">
+                {/* <TabsContent value="unit-measurements" className="space-y-4">
                     <div className="flex justify-between items-center">
                         <h2 className="text-xl font-semibold">
                             Unit Measurements
@@ -231,7 +231,7 @@ export default function SettingsPage() {
                             </TableBody>
                         </Table>
                     </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 <TabsContent value="payment-methods" className="space-y-4">
                     <div className="flex justify-between items-center">

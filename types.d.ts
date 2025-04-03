@@ -25,6 +25,7 @@ export type Product = {
     name: string;
     code: string;
     description?: string;
+    brand?: string;
     image?: string;
     imageUrl?: string;
     buyPrice: number;
@@ -42,7 +43,9 @@ export type Category = {
     id: number;
     name: string;
     description?: string;
+    parentId?: number;
     clerkId: string;
+    subcategories?: Category[];
 };
 
 export type Order = {
@@ -87,6 +90,7 @@ export type ProductFormData = {
     name: string;
     code: string;
     description?: string;
+    brand?: string;
     image?: string;
     imageUrl?: string;
     buyPrice: number;

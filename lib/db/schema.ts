@@ -58,10 +58,11 @@ export const unitMeasurements = sqliteTable("unit_measurements", {
     clerkId: text("clerk_id").notNull(),
 });
 
-export const productCategories = sqliteTable("product_categories", {
+export const productCategories: any = sqliteTable("product_categories", {
     id: integer("id").primaryKey(),
     name: text("name"),
     description: text("description"),
+    parentId: integer("parent_id").references(() => productCategories.id),
     clerkId: text("clerk_id").notNull(),
     deleted: text("deleted"),
 });
@@ -71,6 +72,7 @@ export const products = sqliteTable("products", {
     name: text("name").notNull(),
     code: text("code").notNull(),
     description: text("description"),
+    brand: text("brand"),
     image: text("image").references(() => files.id),
     imageUrl: text("image_url"),
     buyPrice: real("buy_price").notNull(),

@@ -120,10 +120,24 @@ export default function DashboardPage() {
         // Calculate total cost from transactions (excluding refunds)
         const totalCost = filteredTransactions.reduce((sum, transaction) => {
             try {
-                const totalPrice = transaction.totalPrice;
-                const refundedAmount = transaction.totalRefund || 0;
-                
-                return sum + totalPrice - refundedAmount;
+                const items = JSON.parse(transaction.items || '[]') as TransactionItem[];
+                const refundedItems = JSON.parse(transaction.refundedItems || '[]') as Array<{
+                    productId: number;
+                    quantity: number;
+                    amount: number;
+                }>;
+
+                // Calculate cost of regular items
+                const itemsCost = items.reduce((itemSum, item) => 
+                    itemSum + (item.quantity * item.productBuyPrice), 0);
+
+                // Subtract cost of refunded items
+                const refundedCost = refundedItems.reduce((refundSum, refund) => {
+                    const matchingItem = items.find(item => item.productId === refund.productId);
+                    return refundSum + ((matchingItem?.productBuyPrice || 0) * refund.quantity);
+                }, 0);
+
+                return sum + (itemsCost - refundedCost);
             } catch (error) {
                 console.error("Error calculating transaction cost:", error);
                 return sum;
@@ -322,7 +336,7 @@ export default function DashboardPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Sales
+                            Cost
                         </CardTitle>
                         <Wallet className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>

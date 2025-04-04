@@ -279,9 +279,9 @@ export default function TransactionList({
                                                                 </TableCell>
                                                                 <TableCell className="text-right font-bold">
                                                                     PHP{" "}
-                                                                    {transaction.totalPrice.toFixed(
+                                                                    {Number(transaction.totalPrice.toFixed(
                                                                         2
-                                                                    )}
+                                                                    ) )- Number(transaction.totalRefund.toFixed(2))}
                                                                 </TableCell>
                                                             </TableRow>
                                                         </TableBody>

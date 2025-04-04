@@ -81,6 +81,7 @@ export type Transaction = {
     items: string;
     paymentMethodName?: string;
     totalRefund: number;
+    refundedItems?: string;
     refundReasons?: string;
     totalCost?: number;
 };

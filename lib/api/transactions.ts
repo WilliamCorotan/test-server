@@ -45,6 +45,21 @@ export async function getTransactions(userId: string) {
                 JOIN ${products} ON ${orders.productId} = ${products.id}
                 WHERE ${orders.transactionId} = ${transactions.id}
             )`.as("items"),
+            refundedItems: sql`(
+                SELECT json_group_array(json_object(
+                    'id', ${refunds.id},
+                    'productId', ri.product_id,
+                    'productName', ${products.name},
+                    'quantity', ri.quantity,
+                    'amount', ri.amount,
+                    'reason', ${refunds.reason}
+                ))
+                FROM ${refunds}
+                LEFT JOIN refund_items ri ON ${refunds.id} = ri.refund_id
+                LEFT JOIN ${products} ON ri.product_id = ${products.id}
+                WHERE ${refunds.transactionId} = ${transactions.id}
+                GROUP BY ${refunds.transactionId}
+            )`.as("refundedItems"),
             paymentMethodName: payments.name,
             totalRefund: sql`(
                 SELECT COALESCE(SUM(${refunds.totalAmount}), 0)

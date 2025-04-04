@@ -160,7 +160,7 @@ export default function TransactionList({
                                             }
                                         >
                                             PHP{" "}
-                                            {transaction.totalPrice.toFixed(2)}
+                                            {Number(transaction.totalPrice.toFixed(2)) - Number(transaction.totalRefund.toFixed(2))}
                                         </TableCell>
                                         <TableCell
                                             onClick={() =>

@@ -550,7 +550,7 @@ export default function DashboardPage() {
                                                 {item.name}
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                {item.quantity.toFixed(2)}
+                                                {item.quantity}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 PHP {item.sellPrice.toFixed(2)}

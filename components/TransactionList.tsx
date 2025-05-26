@@ -26,6 +26,7 @@ export default function TransactionList({
     loading = false,
     onTransactionUpdated,
 }: TransactionListProps) {
+    console.log("transactions", transactions);
     const { createRefund } = useRefunds();
     const [openRefundDialog, setOpenRefundDialog] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState<
@@ -160,10 +161,10 @@ export default function TransactionList({
                                                 toggleRow(transaction.id)
                                             }
                                         >
-                                            {transaction.user ? (
+                                            {(transaction.user && typeof transaction.user === "string") ? (
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium">{transaction.user.name}</span>
-                                                    <span className="text-sm text-muted-foreground">{transaction.user.email}</span>
+                                                    <span className="font-medium">{JSON.parse(transaction.user).name}</span>
+                                                    <span className="text-sm text-muted-foreground">{JSON.parse(transaction.user).email}</span>
                                                 </div>
                                             ) : (
                                                 <span className="text-muted-foreground">-</span>

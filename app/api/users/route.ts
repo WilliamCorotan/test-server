@@ -69,17 +69,19 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
     try {
-        const userId = await getCurrentUserId();
-        if (!userId) {
-            return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
-            );
-        }
+        // const userId = await getCurrentUserId();
+        // if (!userId) {
+        //     return NextResponse.json(
+        //     { error: "Unauthorized" },
+        //     { status: 401 }
+        //     );
+        // }
         
         const body = await req.json();
-        const { email, password } = body;
+        const { email, password, clerkId } = body;
 
+        console.log("body", body);
+        
         if (!email || !password) {
             return NextResponse.json(
                 { error: "Email and password are required" },
@@ -91,17 +93,17 @@ export async function PUT(req: Request) {
             where: and(
                 eq(users.email, email),
                 eq(users.password, password),
-                eq(users.clerkId, userId)
+                eq(users.clerkId, clerkId)
             ),
         });
 
         if (!user) {
             return NextResponse.json(
                 { error: "Invalid credentials" },
-                { status: 401 }
             );
         }
 
+        console.log("user", user);
         return NextResponse.json({
             id: user.id,
             name: user.name,

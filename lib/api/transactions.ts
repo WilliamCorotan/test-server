@@ -5,6 +5,7 @@ import {
     payments,
     products,
     refunds,
+    users,
 } from "@/lib/db/schema";
 import { eq, sql, getTableColumns, and } from "drizzle-orm";
 
@@ -18,6 +19,7 @@ type TransactionFromApp = {
     email_to?: string;
     clerk_id?: string;
     reference_number?: string;
+    user_id?: number;
 };
 
 type TransactionItemFromApp = {
@@ -78,6 +80,15 @@ export async function getTransactions(userId: string) {
                 JOIN ${products} ON ${orders.productId} = ${products.id}
                 WHERE ${orders.transactionId} = ${transactions.id}
             )`.as("totalCost"),
+            user: sql`(
+                SELECT json_object(
+                    'id', ${users.id},
+                    'name', ${users.name},
+                    'email', ${users.email}
+                )
+                FROM ${users}
+                WHERE ${users.id} = ${transactions.userId}
+            )`.as("user"),
         })
         .from(transactions)
         .leftJoin(payments, eq(transactions.paymentMethodId, payments.id))
@@ -116,6 +127,7 @@ export async function createTransaction(
                 cashReceived: parseFloat(data.cash_received),
                 referenceNumber: data.reference_number ?? null,
                 clerkId: userId,
+                userId: data.user_id ? parseInt(data.user_id.toString()) : null,
             };
 
             const newTransaction = await tx

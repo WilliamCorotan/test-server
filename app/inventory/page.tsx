@@ -14,11 +14,14 @@ import { DateRange } from "@/types";
 import { useState } from "react";
 import { exportProducts } from "@/lib/export/products";
 import { useTransactions } from "@/hooks/use-transactions";
+import { useProducts } from "@/hooks/use-products";
+import { InventoryStats } from "@/components/products/InventoryStats";
 
 export default function ProductsPage() {
     const { userId } = useAuth();
     const [dateRange, setDateRange] = useState<DateRange>("month");
     const { transactions } = useTransactions();
+    const { products } = useProducts();
 
     if (!userId) {
         return <div>Please sign in to view inventory</div>;
@@ -57,6 +60,7 @@ export default function ProductsPage() {
                 </div>
             </div>
 
+            <InventoryStats products={products} />
             <ProductList options={{ type: "inventory" }} />
         </div>
     );
